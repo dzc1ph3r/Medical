@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { getDoctors } from "../api/doctor.api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState<any[]>([]);
+  const { user } = useAuth();
+
+  if (user?.role === "DOCTOR") {
+    return <Navigate to="/doctor/dashboard" replace />;
+  }
 
   useEffect(() => {
     getDoctors({ specialty: "Cardio", city: "Paris" })
