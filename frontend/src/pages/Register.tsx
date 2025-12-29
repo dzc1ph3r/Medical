@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register as registerApi } from "../api/auth.api";
 import { useAuth } from "../context/AuthContext";
 import type { Role } from "../context/AuthContext";
+import { specialties } from "../utils/specialties";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("PATIENT");
   const [specialty, setSpecialty] = useState("");
+  const [consultationFee, setConsultationFee] = useState("");
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +34,7 @@ export default function Register() {
         password,
         role,
         specialty: role === "DOCTOR" ? specialty : undefined,
+        consultationFee: role === "DOCTOR" && consultationFee ? Number(consultationFee) : undefined,
         city: city || undefined,
       };
 
@@ -108,15 +111,35 @@ export default function Register() {
           </div>
 
           {role === "DOCTOR" && (
-            <div className="form-field">
-              <label>Spécialité</label>
-              <input
-                className="form-input"
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                required
-              />
-            </div>
+            <>
+              <div className="form-field">
+                <label>Spécialité</label>
+                <select
+                  className="form-input"
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value)}
+                  required
+                >
+                  <option value="">Choisir une spécialité</option>
+                  {specialties.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label>Tarif consultation (DA)</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  min="0"
+                  value={consultationFee}
+                  onChange={(e) => setConsultationFee(e.target.value)}
+                />
+              </div>
+            </>
           )}
 
           <div className="form-field">

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Calendar from "../components/Calendar";
 import { updateMe } from "../api/user.api";
 import { useAuth } from "../context/AuthContext";
+import { specialties } from "../utils/specialties";
 
 export default function DoctorDashboard() {
   const { token, user, refreshMe } = useAuth();
@@ -12,19 +13,27 @@ export default function DoctorDashboard() {
   const [name, setName] = useState(user?.name ?? "");
   const [city, setCity] = useState(user?.city ?? "");
   const [specialty, setSpecialty] = useState(user?.specialty ?? "");
+  const [consultationFee, setConsultationFee] = useState(
+    user?.consultationFee !== undefined ? String(user.consultationFee) : ""
+  );
 
   const profileDirty = useMemo(
     () =>
       name !== (user?.name ?? "") ||
       city !== (user?.city ?? "") ||
-      specialty !== (user?.specialty ?? ""),
-    [name, city, specialty, user]
+      specialty !== (user?.specialty ?? "") ||
+      consultationFee !==
+        (user?.consultationFee !== undefined ? String(user.consultationFee) : ""),
+    [name, city, specialty, consultationFee, user]
   );
 
   useEffect(() => {
     setName(user?.name ?? "");
     setCity(user?.city ?? "");
     setSpecialty(user?.specialty ?? "");
+    setConsultationFee(
+      user?.consultationFee !== undefined ? String(user.consultationFee) : ""
+    );
   }, [user]);
 
   const submitProfile = async (event: React.FormEvent) => {
@@ -34,7 +43,12 @@ export default function DoctorDashboard() {
     setProfileError(null);
 
     try {
-      await updateMe(token, { name, city, specialty });
+      await updateMe(token, {
+        name,
+        city,
+        specialty,
+        consultationFee: consultationFee ? Number(consultationFee) : undefined,
+      });
       await refreshMe();
     } catch (err: any) {
       setProfileError(err?.response?.data?.message || "Impossible de mettre à jour le profil");
@@ -86,10 +100,28 @@ export default function DoctorDashboard() {
 
             <div className="form-field">
               <label>Spécialité</label>
-              <input
+              <select
                 className="form-input"
                 value={specialty}
                 onChange={(event) => setSpecialty(event.target.value)}
+              >
+                <option value="">Choisir une spécialité</option>
+                {specialties.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label>Tarif consultation (DA)</label>
+              <input
+                className="form-input"
+                type="number"
+                min="0"
+                value={consultationFee}
+                onChange={(event) => setConsultationFee(event.target.value)}
               />
             </div>
 

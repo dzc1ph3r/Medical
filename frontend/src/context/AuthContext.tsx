@@ -9,6 +9,7 @@ export type User = {
   email: string;
   role: Role;
   specialty?: string;
+  consultationFee?: number;
   city?: string;
   createdAt?: string;
   updatedAt?: string;

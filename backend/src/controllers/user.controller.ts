@@ -7,10 +7,11 @@ export async function updateMe(req: Request, res: Response) {
   try {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    const { name, city, specialty } = req.body as {
+    const { name, city, specialty, consultationFee } = req.body as {
       name?: string;
       city?: string;
       specialty?: string;
+      consultationFee?: number;
     };
 
     const user = await User.findById(req.user.id);
@@ -27,8 +28,16 @@ export async function updateMe(req: Request, res: Response) {
         }
         user.specialty = nextSpecialty;
       }
+      if (consultationFee !== undefined) {
+        const parsedFee = Number(consultationFee);
+        if (Number.isNaN(parsedFee) || parsedFee < 0) {
+          return res.status(400).json({ message: "consultationFee must be a positive number" });
+        }
+        user.consultationFee = parsedFee;
+      }
     } else {
       user.specialty = undefined;
+      user.consultationFee = undefined;
     }
 
     await user.save();
