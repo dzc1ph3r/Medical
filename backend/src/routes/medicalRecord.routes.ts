@@ -8,6 +8,7 @@ import {
   getMyMedicalRecords,
   getDoctorMedicalRecords,
   getMedicalRecordFile,
+  deleteMedicalRecord,
 } from "../controllers/medicalRecord.controller";
 
 const router = Router();
@@ -41,5 +42,6 @@ router.post("/", auth, requireRole("PATIENT"), upload.single("file"), uploadMedi
 router.get("/me", auth, requireRole("PATIENT"), getMyMedicalRecords);
 router.get("/doctor/me", auth, requireRole("DOCTOR"), getDoctorMedicalRecords);
 router.get("/:id/file", auth, requireRole("PATIENT", "DOCTOR", "ADMIN"), getMedicalRecordFile);
+router.delete("/:id", auth, requireRole("PATIENT", "DOCTOR", "ADMIN"), deleteMedicalRecord);
 
 export default router;

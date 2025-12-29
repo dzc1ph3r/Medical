@@ -26,3 +26,16 @@ export const getDoctorMedicalRecords = (token: string) =>
   axios.get<MedicalRecord[]>(`${API}/medical-records/doctor/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+export const getMedicalRecordFile = async (token: string, id: string) => {
+  const res = await axios.get(`${API}/medical-records/${id}/file`, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: "blob",
+  });
+  return res.data as Blob;
+};
+
+export const deleteMedicalRecord = (token: string, id: string) =>
+  axios.delete(`${API}/medical-records/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
