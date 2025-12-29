@@ -19,6 +19,17 @@ export default function Login() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!email.trim() || !password.trim()) {
+      setError("Veuillez renseigner votre email et mot de passe.");
+      return;
+    }
+
+    if (password.trim().length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+
     setLoading(true);
 
     try {
