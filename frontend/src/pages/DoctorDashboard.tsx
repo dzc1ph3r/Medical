@@ -32,6 +32,7 @@ export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentLoading, setAppointmentLoading] = useState(false);
   const [appointmentError, setAppointmentError] = useState<string | null>(null);
+  const [appointmentSuccess, setAppointmentSuccess] = useState<string | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
@@ -136,22 +137,31 @@ export default function DoctorDashboard() {
 
   const acceptAppointment = async (appointmentId: string) => {
     if (!token) return;
+    setAppointmentSuccess(null);
+    setAppointmentError(null);
     await updateAppointmentStatus(token, appointmentId, "ACCEPTED");
+    setAppointmentSuccess("Rendez-vous accepté avec succès.");
     await loadAppointments();
   };
 
   const cancelAppointment = async (appointmentId: string) => {
     if (!token) return;
+    setAppointmentSuccess(null);
+    setAppointmentError(null);
     const reason = prompt("Raison de l'annulation ?") || "";
     await updateAppointmentStatus(token, appointmentId, "CANCELLED", reason);
+    setAppointmentSuccess("Rendez-vous annulé avec succès.");
     await loadAppointments();
   };
 
   const reschedule = async (appointmentId: string) => {
     if (!token) return;
+    setAppointmentSuccess(null);
+    setAppointmentError(null);
     const iso = prompt("Nouvelle date ISO (ex: 2026-01-15T10:00:00.000Z) ?");
     if (!iso) return;
     await rescheduleAppointment(token, appointmentId, iso);
+    setAppointmentSuccess("Rendez-vous reporté avec succès.");
     await loadAppointments();
   };
 
@@ -245,9 +255,10 @@ export default function DoctorDashboard() {
         <div className="tab-panel">
           {appointmentLoading && <p>Chargement...</p>}
           {appointmentError && <p className="form-error">{appointmentError}</p>}
+          {appointmentSuccess && <p className="form-success">{appointmentSuccess}</p>}
           <div className="card-grid">
             {appointments.map((appointment) => (
-              <div key={appointment._id} className="info-card">
+              <div key={appointment._id} className="info-card appointment-card">
                 <p>
                   <b>Patient:</b>{" "}
                   {typeof appointment.patient === "string"
@@ -260,18 +271,34 @@ export default function DoctorDashboard() {
                 <p>
                   <b>Status:</b> {appointment.status}
                 </p>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div className="appointment-actions">
                   <button
+                    className="action-button action-button--accept"
                     onClick={() => acceptAppointment(appointment._id)}
                     disabled={appointment.status === "ACCEPTED"}
                   >
+                    <span className="action-icon" aria-hidden>
+                      ✓
+                    </span>
                     Accepter
                   </button>
-                  <button onClick={() => reschedule(appointment._id)}>Reporter</button>
                   <button
+                    className="action-button action-button--reschedule"
+                    onClick={() => reschedule(appointment._id)}
+                  >
+                    <span className="action-icon" aria-hidden>
+                      ↻
+                    </span>
+                    Reporter
+                  </button>
+                  <button
+                    className="action-button action-button--cancel"
                     onClick={() => cancelAppointment(appointment._id)}
                     disabled={appointment.status === "CANCELLED"}
                   >
+                    <span className="action-icon" aria-hidden>
+                      ✕
+                    </span>
                     Annuler
                   </button>
                 </div>
