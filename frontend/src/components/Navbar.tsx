@@ -23,16 +23,9 @@ export default function Navbar() {
         <nav className="navbar__links">
           {user?.role !== "DOCTOR" && <Link to="/">Médecins</Link>}
 
-          {user?.role === "PATIENT" && (
-            <Link to="/patient/dashboard" style={{ textDecoration: "none", color: "#334155" }}>
-              Mes RDV
-            </Link>
-          )}
-          {user?.role === "DOCTOR" && (
-            <Link to="/doctor/dashboard" style={{ textDecoration: "none", color: "#334155" }}>
-              Calendrier
-            </Link>
-          )}
+          {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
+          {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
+          {user?.role === "ADMIN" && <Link to="/admin">Admin</Link>}
         </nav>
       </div>
 
