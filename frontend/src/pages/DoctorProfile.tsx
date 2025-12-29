@@ -7,17 +7,30 @@ export default function DoctorProfile() {
   const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {
-    getDoctorById(id!)
-      .then(res => setDoctor(res.data));
-  }, []);
+    if (!id) return;
+    getDoctorById(id).then(res => setDoctor(res.data));
+  }, [id]);
 
   if (!doctor) return <p>Chargement...</p>;
 
   return (
-    <div>
-      <h2>{doctor.name}</h2>
-      <p>Spécialité : {doctor.specialty}</p>
-      <p>Ville : {doctor.city}</p>
+    <div className="profile-page">
+      <div className="profile-summary">
+        <div>
+          <h2>{doctor.name}</h2>
+          <p className="muted">{doctor.specialty || "Spécialité non renseignée"}</p>
+          <p className="muted">{doctor.city || "Ville non renseignée"}</p>
+        </div>
+
+        <div className="profile-meta">
+          <span className="badge">
+            {doctor.consultationFee !== undefined && doctor.consultationFee !== null
+              ? `${doctor.consultationFee} DA`
+              : "Tarif à confirmer"}
+          </span>
+          <button className="button-primary">Prendre rendez-vous</button>
+        </div>
+      </div>
     </div>
   );
 }
