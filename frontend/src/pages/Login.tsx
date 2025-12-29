@@ -58,94 +58,44 @@ export default function Login() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "calc(100vh - 80px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-        background: "linear-gradient(135deg, #f4f8ff 0%, #ffffff 60%)",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 420,
-          padding: 28,
-          borderRadius: 16,
-          background: "#ffffff",
-          boxShadow: "0 16px 40px rgba(15, 23, 42, 0.08)",
-          border: "1px solid #e5e7eb",
-        }}
-      >
-        <div style={{ marginBottom: 20 }}>
-          <p style={{ margin: 0, color: "#64748b", fontWeight: 600 }}>Bienvenue</p>
-          <h2 style={{ margin: "6px 0 0" }}>Connexion</h2>
-          <p style={{ margin: "8px 0 0", color: "#64748b", fontSize: 14 }}>
-            Accédez à votre espace MedCare en quelques secondes.
-          </p>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-card__header">
+          <h2>Connexion</h2>
+          <p>Accède à ton tableau de bord patient ou médecin.</p>
         </div>
 
-        <form onSubmit={onSubmit} style={{ display: "grid", gap: 14 }}>
-          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
-            Email
+        <form onSubmit={onSubmit} className="auth-form">
+          <div className="form-field">
+            <label>Email</label>
             <input
+              className="form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="vous@email.com"
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #cbd5f5",
-                fontSize: 14,
-              }}
             />
-          </label>
+          </div>
 
-          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
-            Mot de passe
+          <div className="form-field">
+            <label>Mot de passe</label>
             <input
+              className="form-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #cbd5f5",
-                fontSize: 14,
-              }}
             />
-          </label>
+          </div>
 
-          {error && (
-            <p style={{ color: "#b91c1c", margin: 0, fontSize: 13 }}>{error}</p>
-          )}
+          {error && <p className="form-error">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              marginTop: 6,
-              padding: "12px 16px",
-              borderRadius: 10,
-              border: "none",
-              background: "#1d4ed8",
-              color: "#fff",
-              fontWeight: 600,
-              cursor: "pointer",
-              opacity: loading ? 0.7 : 1,
-            }}
-          >
+          <button type="submit" disabled={loading} className="button-primary">
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
 
-        <p style={{ marginTop: 16, fontSize: 14, color: "#475569" }}>
+        <p className="auth-footer">
           Pas encore de compte ? <Link to="/register">Créer un compte</Link>
         </p>
       </div>

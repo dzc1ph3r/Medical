@@ -5,23 +5,11 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { specialty, wilaya, city } = req.query;
-    const filters: Record<string, unknown> = { role: "DOCTOR" };
+    const { specialty, city } = req.query;
+    const filters: Record<string, string> = { role: "DOCTOR" };
 
-    const buildRegex = (value: string) =>
-      new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-
-    if (typeof specialty === "string" && specialty.trim()) {
-      filters.specialty = buildRegex(specialty.trim());
-    }
-
-    if (typeof wilaya === "string" && wilaya.trim()) {
-      filters.wilaya = buildRegex(wilaya.trim());
-    }
-
-    if (typeof city === "string" && city.trim()) {
-      filters.city = buildRegex(city.trim());
-    }
+    if (specialty) filters.specialty = String(specialty);
+    if (city) filters.city = String(city);
 
     const doctors = await User.find(filters);
     return res.json(doctors);

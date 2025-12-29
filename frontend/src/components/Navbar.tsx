@@ -14,26 +14,14 @@ export default function Navbar() {
     user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
 
   return (
-    <header
-      style={{
-        padding: "12px 18px",
-        borderBottom: "1px solid #e5e5e5",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-        background: "#ffffff",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Link to="/" style={{ fontWeight: 700, textDecoration: "none", color: "#0f172a" }}>
+    <header className="navbar">
+      <div className="navbar__left">
+        <Link to="/" className="navbar__brand">
           MedCare
         </Link>
 
-        <nav style={{ display: "flex", gap: 12 }}>
-          <Link to="/" style={{ textDecoration: "none", color: "#334155" }}>
-            Médecins
-          </Link>
+        <nav className="navbar__links">
+          <Link to="/">Médecins</Link>
 
           {user?.role === "PATIENT" && (
             <Link to="/patient/dashboard" style={{ textDecoration: "none", color: "#334155" }}>
@@ -48,7 +36,7 @@ export default function Navbar() {
         </nav>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div className="navbar__actions">
         {!user ? (
           <>
             <Link to="/login" style={{ textDecoration: "none", color: "#334155" }}>
@@ -60,21 +48,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link
-              to={dashboardPath}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 999,
-                background: "#1d4ed8",
-                color: "#fff",
-                fontSize: 13,
-                textDecoration: "none",
-                fontWeight: 600,
-              }}
-            >
-              Dashboard
-            </Link>
-            <span style={{ opacity: 0.8, color: "#475569" }}>
+            <span className="navbar__user">
               {user.name} — <b>{user.role}</b>
             </span>
             <button

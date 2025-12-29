@@ -3,22 +3,9 @@ import NotificationBell from "../components/NotificationBell";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <div className="app-shell">
       <Navbar />
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "12px auto 0",
-          padding: "0 18px",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <NotificationBell />
-      </div>
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: 18 }}>
-        {children}
-      </main>
+      <main className="app-main">{children}</main>
     </div>
   );
 }
