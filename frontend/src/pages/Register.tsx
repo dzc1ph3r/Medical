@@ -19,10 +19,32 @@ export default function Register() {
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    specialty?: string;
+  }>({});
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    const nextFieldErrors: typeof fieldErrors = {};
+
+    if (!name.trim()) nextFieldErrors.name = "Le nom est requis.";
+    if (!email.trim()) nextFieldErrors.email = "L'email est requis.";
+    if (!password.trim()) {
+      nextFieldErrors.password = "Le mot de passe est requis.";
+    } else if (password.trim().length < 6) {
+      nextFieldErrors.password = "Minimum 6 caractères.";
+    }
+    if (role === "DOCTOR" && !specialty.trim()) {
+      nextFieldErrors.specialty = "La spécialité est obligatoire.";
+    }
+
+    setFieldErrors(nextFieldErrors);
+    if (Object.keys(nextFieldErrors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -55,69 +77,184 @@ export default function Register() {
   };
 
   return (
-    <div style={{ maxWidth: 480, margin: "60px auto" }}>
-      <h2>Créer un compte</h2>
-
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>Nom</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+    <div
+      style={{
+        minHeight: "calc(100vh - 80px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+        background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 60%)",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 520,
+          padding: 28,
+          borderRadius: 16,
+          background: "#ffffff",
+          boxShadow: "0 16px 40px rgba(15, 23, 42, 0.08)",
+          border: "1px solid #e5e7eb",
+        }}
+      >
+        <div style={{ marginBottom: 20 }}>
+          <p style={{ margin: 0, color: "#64748b", fontWeight: 600 }}>Rejoindre MedCare</p>
+          <h2 style={{ margin: "6px 0 0" }}>Créer un compte</h2>
+          <p style={{ margin: "8px 0 0", color: "#64748b", fontSize: 14 }}>
+            Renseignez vos informations pour commencer.
+          </p>
         </div>
 
-        <div style={{ marginTop: 12 }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <label>Mot de passe</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          <label>Rôle</label>
-          <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            <option value="PATIENT">Patient</option>
-            <option value="DOCTOR">Médecin</option>
-          </select>
-        </div>
-
-        {role === "DOCTOR" && (
-          <div style={{ marginTop: 12 }}>
-            <label>Spécialité</label>
+        <form onSubmit={onSubmit} style={{ display: "grid", gap: 14 }}>
+          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+            Nom complet
             <input
-              value={specialty}
-              onChange={(e) => setSpecialty(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
+              placeholder="Votre nom"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #cbd5f5",
+                fontSize: 14,
+              }}
             />
-          </div>
-        )}
+            {fieldErrors.name && (
+              <span style={{ color: "#b91c1c", fontSize: 12 }}>
+                {fieldErrors.name}
+              </span>
+            )}
+          </label>
 
-        <div style={{ marginTop: 12 }}>
-          <label>Ville</label>
-          <input value={city} onChange={(e) => setCity(e.target.value)} />
-        </div>
+          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+            Email
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="vous@email.com"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #cbd5f5",
+                fontSize: 14,
+              }}
+            />
+            {fieldErrors.email && (
+              <span style={{ color: "#b91c1c", fontSize: 12 }}>
+                {fieldErrors.email}
+              </span>
+            )}
+          </label>
 
-        {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
+          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+            Mot de passe
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Minimum 6 caractères"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #cbd5f5",
+                fontSize: 14,
+              }}
+            />
+            {fieldErrors.password && (
+              <span style={{ color: "#b91c1c", fontSize: 12 }}>
+                {fieldErrors.password}
+              </span>
+            )}
+          </label>
 
-        <button type="submit" disabled={loading} style={{ marginTop: 16 }}>
-          {loading ? "Création..." : "Créer le compte"}
-        </button>
-      </form>
+          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+            Rôle
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as Role)}
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #cbd5f5",
+                fontSize: 14,
+                background: "#fff",
+              }}
+            >
+              <option value="PATIENT">Patient</option>
+              <option value="DOCTOR">Médecin</option>
+            </select>
+          </label>
 
-      <p style={{ marginTop: 12 }}>
-        Déjà un compte ? <Link to="/login">Se connecter</Link>
-      </p>
+          {role === "DOCTOR" && (
+            <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+              Spécialité
+              <input
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value)}
+                required
+                placeholder="Cardiologie, pédiatrie..."
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  border: "1px solid #cbd5f5",
+                  fontSize: 14,
+                }}
+              />
+              {fieldErrors.specialty && (
+                <span style={{ color: "#b91c1c", fontSize: 12 }}>
+                  {fieldErrors.specialty}
+                </span>
+              )}
+            </label>
+          )}
+
+          <label style={{ display: "grid", gap: 6, fontSize: 14, color: "#0f172a" }}>
+            Ville
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Votre ville"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #cbd5f5",
+                fontSize: 14,
+              }}
+            />
+          </label>
+
+          {error && (
+            <p style={{ color: "#b91c1c", margin: 0, fontSize: 13 }}>{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              marginTop: 6,
+              padding: "12px 16px",
+              borderRadius: 10,
+              border: "none",
+              background: "#1d4ed8",
+              color: "#fff",
+              fontWeight: 600,
+              cursor: "pointer",
+              opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? "Création..." : "Créer le compte"}
+          </button>
+        </form>
+
+        <p style={{ marginTop: 16, fontSize: 14, color: "#475569" }}>
+          Déjà un compte ? <Link to="/login">Se connecter</Link>
+        </p>
+      </div>
     </div>
   );
 }
