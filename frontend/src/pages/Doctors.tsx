@@ -23,14 +23,6 @@ export default function Doctors() {
     }).then((res) => setDoctors(res.data));
   }, [specialty, city]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    getDoctors({
-      specialty: specialty.trim() || undefined,
-      wilaya: wilaya || undefined,
-    }).then(res => setDoctors(res.data));
-  };
-
   return (
     <div className="doctors-page">
       <section className="hero">
