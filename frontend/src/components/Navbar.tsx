@@ -11,30 +11,22 @@ export default function Navbar() {
   };
 
   return (
-    <header
-      style={{
-        padding: "12px 18px",
-        borderBottom: "1px solid #e5e5e5",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Link to="/" style={{ fontWeight: 700, textDecoration: "none" }}>
+    <header className="navbar">
+      <div className="navbar__left">
+        <Link to="/" className="navbar__brand">
           MedCare
         </Link>
 
-        <nav style={{ display: "flex", gap: 12 }}>
-          <Link to="/">Médecins</Link>
+        <nav className="navbar__links">
+          {user?.role !== "DOCTOR" && <Link to="/">Médecins</Link>}
 
           {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
           {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
+          {user?.role === "ADMIN" && <Link to="/admin">Admin</Link>}
         </nav>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div className="navbar__actions">
         {!user ? (
           <>
             <Link to="/login">Connexion</Link>
@@ -42,7 +34,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <span style={{ opacity: 0.8 }}>
+            <span className="navbar__user">
               {user.name} — <b>{user.role}</b>
             </span>
             <button onClick={onLogout}>Déconnexion</button>
