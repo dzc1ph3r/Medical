@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export type JwtPayload = { id: string; role: "DOCTOR" | "PATIENT" };
+export type JwtPayload = { id: string; role: "DOCTOR" | "PATIENT" | "ADMIN" };
 
 export function signToken(payload: JwtPayload) {
   return jwt.sign(payload, process.env.JWT_SECRET as string, {
