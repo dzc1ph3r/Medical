@@ -18,48 +18,6 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-const uploadsDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-app.use("/uploads", express.static(uploadsDir));
-
-const uploadsDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-app.use("/uploads", express.static(uploadsDir));
-
-const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), "uploads");
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-};
-
-app.use("/uploads", express.static(ensureUploadsDir()));
-
-const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), "uploads");
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-};
-
-app.use("/uploads", express.static(ensureUploadsDir()));
-
-const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), "uploads");
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-};
-
-app.use("/uploads", express.static(ensureUploadsDir()));
-
 const ensureUploadsDir = () => {
   const dir = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(dir)) {
