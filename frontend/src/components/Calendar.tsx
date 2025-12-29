@@ -24,6 +24,7 @@ export default function Calendar() {
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<View>("week");
   const [date, setDate] = useState<Date>(new Date());
+  const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const load = async () => {
     if (!token) return;
@@ -41,6 +42,10 @@ export default function Calendar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
+  useEffect(() => {
+    setYear(date.getFullYear());
+  }, [date]);
+
   const events = useMemo(
     () =>
       appointments.map((a) => ({
@@ -51,6 +56,20 @@ export default function Calendar() {
         resource: a,
       })),
     [appointments]
+  );
+
+  const yearOptions = useMemo(() => {
+    const current = new Date().getFullYear();
+    return Array.from({ length: 7 }, (_, idx) => current - 3 + idx);
+  }, []);
+
+  const yearAppointments = useMemo(
+    () =>
+      appointments.filter((appointment) => {
+        const appointmentDate = new Date(appointment.date);
+        return appointmentDate.getFullYear() === year;
+      }),
+    [appointments, year]
   );
 
   const accept = async () => {
@@ -84,6 +103,25 @@ export default function Calendar() {
       <h2>Calendrier des rendez-vous</h2>
       {loading && <p>Chargement...</p>}
 
+      <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 12 }}>
+        <label htmlFor="calendar-year">Année</label>
+        <select
+          id="calendar-year"
+          value={year}
+          onChange={(event) => {
+            const nextYear = Number(event.target.value);
+            setYear(nextYear);
+            setDate(new Date(nextYear, date.getMonth(), 1));
+          }}
+        >
+          {yearOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <BigCalendar
         localizer={localizer}
         events={events}
@@ -97,6 +135,31 @@ export default function Calendar() {
         onSelectEvent={(e: any) => setSelected(e.resource as Appointment)}
         views={["month", "week", "day", "agenda"]}
       />
+
+      <div style={{ marginTop: 16 }}>
+        <h3>Rendez-vous en {year}</h3>
+        {yearAppointments.length === 0 && <p>Aucun rendez-vous cette année.</p>}
+        {yearAppointments.length > 0 && (
+          <div style={{ display: "grid", gap: 8 }}>
+            {yearAppointments.map((appointment) => (
+              <div key={appointment._id} style={{ border: "1px solid #e2e8f0", padding: 12 }}>
+                <p>
+                  <b>Date:</b> {new Date(appointment.date).toLocaleString("fr-FR")}
+                </p>
+                <p>
+                  <b>Patient:</b>{" "}
+                  {typeof appointment.patient === "string"
+                    ? appointment.patient
+                    : appointment.patient.name}
+                </p>
+                <p>
+                  <b>Status:</b> {appointment.status}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {selected && (
         <div style={{ marginTop: 12, border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>

@@ -50,6 +50,16 @@ const ensureUploadsDir = () => {
 
 app.use("/uploads", express.static(ensureUploadsDir()));
 
+const ensureUploadsDir = () => {
+  const dir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  return dir;
+};
+
+app.use("/uploads", express.static(ensureUploadsDir()));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);

@@ -14,7 +14,7 @@ export default function Navbar() {
     user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
 
   return (
-    <header className="navbar">
+    <header className="navbar bg-white/80 backdrop-blur">
       <div className="navbar__left">
         <Link to="/" className="navbar__brand">
           MedCare
