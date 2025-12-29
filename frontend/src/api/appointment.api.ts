@@ -14,6 +14,11 @@ export const getMyDoctorAppointments = (token: string) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
+export const getMyAppointments = (token: string) =>
+  axios.get<Appointment[]>(`${API}/appointments/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
 export const updateAppointmentStatus = (
   token: string,
   id: string,
