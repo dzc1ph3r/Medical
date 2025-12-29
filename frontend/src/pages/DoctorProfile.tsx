@@ -7,9 +7,9 @@ export default function DoctorProfile() {
   const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {
-    getDoctorById(id!)
-      .then(res => setDoctor(res.data));
-  }, []);
+    if (!id) return;
+    getDoctorById(id).then(res => setDoctor(res.data));
+  }, [id]);
 
   if (!doctor) return <p>Chargement...</p>;
 
