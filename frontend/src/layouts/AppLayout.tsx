@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import NotificationBell from "../components/NotificationBell";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (

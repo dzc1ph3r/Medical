@@ -10,6 +10,9 @@ export default function Navbar() {
     navigate("/login", { replace: true });
   };
 
+  const dashboardPath =
+    user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
+
   return (
     <header className="navbar">
       <div className="navbar__left">
@@ -20,23 +23,46 @@ export default function Navbar() {
         <nav className="navbar__links">
           <Link to="/">Médecins</Link>
 
-          {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
-          {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
+          {user?.role === "PATIENT" && (
+            <Link to="/patient/dashboard" style={{ textDecoration: "none", color: "#334155" }}>
+              Mes RDV
+            </Link>
+          )}
+          {user?.role === "DOCTOR" && (
+            <Link to="/doctor/dashboard" style={{ textDecoration: "none", color: "#334155" }}>
+              Calendrier
+            </Link>
+          )}
         </nav>
       </div>
 
       <div className="navbar__actions">
         {!user ? (
           <>
-            <Link to="/login">Connexion</Link>
-            <Link to="/register">Inscription</Link>
+            <Link to="/login" style={{ textDecoration: "none", color: "#334155" }}>
+              Connexion
+            </Link>
+            <Link to="/register" style={{ textDecoration: "none", color: "#334155" }}>
+              Inscription
+            </Link>
           </>
         ) : (
           <>
             <span className="navbar__user">
               {user.name} — <b>{user.role}</b>
             </span>
-            <button onClick={onLogout}>Déconnexion</button>
+            <button
+              onClick={onLogout}
+              style={{
+                padding: "6px 12px",
+                borderRadius: 8,
+                border: "1px solid #e2e8f0",
+                background: "#f8fafc",
+                cursor: "pointer",
+              }}
+            >
+              Déconnexion
+            </button>
           </>
         )}
       </div>
