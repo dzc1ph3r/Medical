@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     },
 
     specialty: { type: String, trim: true }, // requis côté controller si role=DOCTOR
+    consultationFee: { type: Number, min: 0 },
     city: { type: String, trim: true },
   },
   { timestamps: true }

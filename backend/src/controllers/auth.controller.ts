@@ -7,13 +7,14 @@ type Role = "DOCTOR" | "PATIENT";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { name, email, password, role, specialty, city } = req.body as {
+    const { name, email, password, role, specialty, city, consultationFee } = req.body as {
       name: string;
       email: string;
       password: string;
       role: Role;
       specialty?: string;
       city?: string;
+      consultationFee?: number;
     };
 
     if (!name || !email || !password || !role) {
@@ -35,12 +36,18 @@ export async function register(req: Request, res: Response) {
 
     const hashed = await bcrypt.hash(password, 10);
 
+    const parsedFee =
+      consultationFee !== undefined && consultationFee !== null
+        ? Number(consultationFee)
+        : undefined;
+
     const user = await User.create({
       name: String(name).trim(),
       email: normalizedEmail,
       password: hashed,
       role,
       specialty: role === "DOCTOR" ? String(specialty) : undefined,
+      consultationFee: role === "DOCTOR" ? parsedFee : undefined,
       city: city ? String(city).trim() : undefined,
     });
 
