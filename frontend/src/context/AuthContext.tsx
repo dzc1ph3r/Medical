@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { me as apiMe } from "../api/auth.api";
 
-export type Role = "DOCTOR" | "PATIENT";
+export type Role = "DOCTOR" | "PATIENT" | "ADMIN";
 
 export type User = {
   _id: string; // Mongo returns _id
@@ -9,6 +9,8 @@ export type User = {
   email: string;
   role: Role;
   specialty?: string;
+  consultationFee?: number;
+  gender?: "MALE" | "FEMALE";
   city?: string;
   createdAt?: string;
   updatedAt?: string;
