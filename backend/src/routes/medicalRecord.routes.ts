@@ -7,6 +7,7 @@ import {
   uploadMedicalRecord,
   getMyMedicalRecords,
   getDoctorMedicalRecords,
+  getMedicalRecordFile,
 } from "../controllers/medicalRecord.controller";
 
 const router = Router();
@@ -39,5 +40,6 @@ const upload = multer({
 router.post("/", auth, requireRole("PATIENT"), upload.single("file"), uploadMedicalRecord);
 router.get("/me", auth, requireRole("PATIENT"), getMyMedicalRecords);
 router.get("/doctor/me", auth, requireRole("DOCTOR"), getDoctorMedicalRecords);
+router.get("/:id/file", auth, requireRole("PATIENT", "DOCTOR", "ADMIN"), getMedicalRecordFile);
 
 export default router;

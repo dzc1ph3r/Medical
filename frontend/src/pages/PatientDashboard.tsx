@@ -41,6 +41,7 @@ export default function PatientDashboard() {
   const [recordNotes, setRecordNotes] = useState("");
   const [recordFile, setRecordFile] = useState<File | null>(null);
   const [recordSuccess, setRecordSuccess] = useState<string | null>(null);
+  const [recordPreviewUrl, setRecordPreviewUrl] = useState<string | null>(null);
 
   const profileDirty = useMemo(
     () =>
@@ -283,12 +284,28 @@ export default function PatientDashboard() {
                   <p>
                     <b>Médecin:</b> {record.doctor?.name || "Non renseigné"}
                   </p>
-                  <a className="button-link" href={record.fileUrl} target="_blank" rel="noreferrer">
+                  <button
+                    className="button-link"
+                    type="button"
+                    onClick={() => setRecordPreviewUrl(record.fileUrl ?? null)}
+                  >
                     Ouvrir
-                  </a>
+                  </button>
                 </div>
               ))}
           </div>
+
+          {recordPreviewUrl && (
+            <div className="preview-panel">
+              <div className="preview-header">
+                <h4>Prévisualisation du document</h4>
+                <button type="button" onClick={() => setRecordPreviewUrl(null)}>
+                  Fermer
+                </button>
+              </div>
+              <iframe title="document" src={recordPreviewUrl} className="preview-frame" />
+            </div>
+          )}
         </div>
       )}
 

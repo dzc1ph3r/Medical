@@ -16,7 +16,26 @@ export default function Navbar() {
   return (
     <header className="navbar bg-white/80 backdrop-blur">
       <div className="navbar__left">
-        <Link to="/" className="navbar__brand">
+        <Link to="/" className="navbar__brand flex items-center gap-2">
+          <span className="logo-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 2C7.03 2 3 6.03 3 11c0 4.5 3.14 8.26 7.39 8.94L12 22l1.61-2.06C17.86 19.26 21 15.5 21 11c0-4.97-4.03-9-9-9z"
+                fill="#38bdf8"
+              />
+              <path
+                d="M9 10.5h2.5V8h2v2.5H16v2h-2.5V15h-2v-2.5H9v-2z"
+                fill="#0f172a"
+              />
+            </svg>
+          </span>
           MedCare
         </Link>
 

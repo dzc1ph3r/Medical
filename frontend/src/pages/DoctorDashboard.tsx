@@ -23,6 +23,7 @@ export default function DoctorDashboard() {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [recordLoading, setRecordLoading] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
+  const [recordPreviewUrl, setRecordPreviewUrl] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentLoading, setAppointmentLoading] = useState(false);
   const [appointmentError, setAppointmentError] = useState<string | null>(null);
@@ -257,12 +258,28 @@ export default function DoctorDashboard() {
                 <p>
                   <b>Document:</b> {record.originalName}
                 </p>
-                <a className="button-link" href={record.fileUrl} target="_blank" rel="noreferrer">
+                <button
+                  className="button-link"
+                  type="button"
+                  onClick={() => setRecordPreviewUrl(record.fileUrl ?? null)}
+                >
                   Ouvrir
-                </a>
+                </button>
               </div>
             ))}
           </div>
+
+          {recordPreviewUrl && (
+            <div className="preview-panel">
+              <div className="preview-header">
+                <h4>Prévisualisation du document</h4>
+                <button type="button" onClick={() => setRecordPreviewUrl(null)}>
+                  Fermer
+                </button>
+              </div>
+              <iframe title="document" src={recordPreviewUrl} className="preview-frame" />
+            </div>
+          )}
         </div>
       )}
 

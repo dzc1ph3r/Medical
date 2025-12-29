@@ -1,6 +1,7 @@
 export type MedicalRecord = {
   _id: string;
-  fileUrl: string;
+  fileUrl?: string;
+  fileName?: string;
   originalName: string;
   mimeType: string;
   notes?: string;
