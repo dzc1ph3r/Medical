@@ -19,6 +19,14 @@ export const getMyAppointments = (token: string) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
+export const createAppointment = (
+  token: string,
+  payload: { doctorId: string; date: string }
+) =>
+  axios.post<Appointment>(`${API}/appointments`, payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
 export const updateAppointmentStatus = (
   token: string,
   id: string,

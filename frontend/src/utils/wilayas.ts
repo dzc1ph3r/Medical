@@ -1,4 +1,4 @@
-export const WILAYAS = [
+export const wilayas = [
   "Adrar",
   "Chlef",
   "Laghouat",
@@ -32,7 +32,7 @@ export const WILAYAS = [
   "Oran",
   "El Bayadh",
   "Illizi",
-  "Bordj Bou Arreridj",
+  "Bordj Bou Arréridj",
   "Boumerdès",
   "El Tarf",
   "Tindouf",

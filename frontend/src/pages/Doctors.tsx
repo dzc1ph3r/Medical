@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { getDoctors } from "../api/doctor.api";
 import { useAuth } from "../context/AuthContext";
 import { specialties } from "../utils/specialties";
+import { wilayas } from "../utils/wilayas";
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -63,13 +64,19 @@ export default function Doctors() {
         </div>
 
         <div className="form-field">
-          <label>Ville / Wilaya</label>
-          <input
+          <label>Wilaya</label>
+          <select
             className="form-input"
-            placeholder="Ex: Alger, Oran, Constantine"
             value={city}
             onChange={(event) => setCity(event.target.value)}
-          />
+          >
+            <option value="">Toutes les wilayas</option>
+            {wilayas.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
         </div>
       </section>
 
@@ -80,6 +87,11 @@ export default function Doctors() {
               <h3>{doc.name}</h3>
               <p className="muted">{doc.specialty || "Spécialité non renseignée"}</p>
               <p className="muted">{doc.city || "Ville non renseignée"}</p>
+              {doc.gender && (
+                <p className="muted">
+                  {doc.gender === "MALE" ? "Homme" : "Femme"}
+                </p>
+              )}
             </div>
 
             <div className="doctor-card__footer">

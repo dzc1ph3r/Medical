@@ -3,30 +3,25 @@ import bcrypt from "bcrypt";
 import User from "../models/User";
 import { signToken } from "../utils/jwt";
 
-type Role = "DOCTOR" | "PATIENT";
+type Role = "DOCTOR" | "PATIENT" | "ADMIN";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { name, email, password, role, specialty, city, consultationFee } = req.body as {
+    const { name, email, password, role, city, gender } = req.body as {
       name: string;
       email: string;
       password: string;
       role: Role;
-      specialty?: string;
       city?: string;
-      consultationFee?: number;
+      gender?: "MALE" | "FEMALE";
     };
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "Missing fields" });
     }
 
-    if (role !== "DOCTOR" && role !== "PATIENT") {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    if (role === "DOCTOR" && !specialty) {
-      return res.status(400).json({ message: "specialty is required for DOCTOR" });
+    if (role && role !== "PATIENT") {
+      return res.status(403).json({ message: "Only PATIENT registration is allowed" });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
@@ -45,9 +40,10 @@ export async function register(req: Request, res: Response) {
       name: String(name).trim(),
       email: normalizedEmail,
       password: hashed,
-      role,
-      specialty: role === "DOCTOR" ? String(specialty) : undefined,
-      consultationFee: role === "DOCTOR" ? parsedFee : undefined,
+      role: "PATIENT",
+      specialty: undefined,
+      consultationFee: undefined,
+      gender: gender ?? undefined,
       city: city ? String(city).trim() : undefined,
     });
 

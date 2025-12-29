@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register as registerApi } from "../api/auth.api";
 import { useAuth } from "../context/AuthContext";
-import type { Role } from "../context/AuthContext";
-import { specialties } from "../utils/specialties";
+import { wilayas } from "../utils/wilayas";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -15,10 +14,8 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<Role>("PATIENT");
-  const [specialty, setSpecialty] = useState("");
-  const [consultationFee, setConsultationFee] = useState("");
   const [city, setCity] = useState("");
+  const [gender, setGender] = useState<"MALE" | "FEMALE" | "">("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,9 +29,8 @@ export default function Register() {
         name,
         email,
         password,
-        role,
-        specialty: role === "DOCTOR" ? specialty : undefined,
-        consultationFee: role === "DOCTOR" && consultationFee ? Number(consultationFee) : undefined,
+        role: "PATIENT",
+        gender: gender || undefined,
         city: city || undefined,
       };
 
@@ -99,52 +95,32 @@ export default function Register() {
           </div>
 
           <div className="form-field">
-            <label>Rôle</label>
+            <label>Wilaya</label>
             <select
               className="form-input"
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
             >
-              <option value="PATIENT">Patient</option>
-              <option value="DOCTOR">Médecin</option>
+              <option value="">Choisir une wilaya</option>
+              {wilayas.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
             </select>
           </div>
 
-          {role === "DOCTOR" && (
-            <>
-              <div className="form-field">
-                <label>Spécialité</label>
-                <select
-                  className="form-input"
-                  value={specialty}
-                  onChange={(e) => setSpecialty(e.target.value)}
-                  required
-                >
-                  <option value="">Choisir une spécialité</option>
-                  {specialties.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-field">
-                <label>Tarif consultation (DA)</label>
-                <input
-                  className="form-input"
-                  type="number"
-                  min="0"
-                  value={consultationFee}
-                  onChange={(e) => setConsultationFee(e.target.value)}
-                />
-              </div>
-            </>
-          )}
-
           <div className="form-field">
-            <label>Ville</label>
-            <input className="form-input" value={city} onChange={(e) => setCity(e.target.value)} />
+            <label>Sexe</label>
+            <select
+              className="form-input"
+              value={gender}
+              onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE" | "")}
+            >
+              <option value="">Non spécifié</option>
+              <option value="MALE">Homme</option>
+              <option value="FEMALE">Femme</option>
+            </select>
           </div>
 
           {error && <p className="form-error">{error}</p>}
@@ -156,6 +132,9 @@ export default function Register() {
 
         <p className="auth-footer">
           Déjà un compte ? <Link to="/login">Se connecter</Link>
+        </p>
+        <p className="auth-footer" style={{ marginTop: 8 }}>
+          Les comptes médecins sont créés par l’administrateur.
         </p>
       </div>
     </div>

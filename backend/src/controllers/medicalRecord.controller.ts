@@ -1,70 +1,60 @@
 import { Request, Response } from "express";
 import MedicalRecord from "../models/MedicalRecord";
 
-type MulterFile = Express.Multer.File | undefined;
-
-const resolvePatientAndDoctor = (req: Request) => {
-  const { doctorId, patientId } = req.body as { doctorId?: string; patientId?: string };
-
-  if (req.user?.role === "PATIENT") {
-    return { patient: req.user.id, doctor: doctorId };
-  }
-
-  if (req.user?.role === "DOCTOR") {
-    return { patient: patientId, doctor: req.user.id };
-  }
-
-  return { patient: undefined, doctor: undefined };
-};
-
-export async function createMedicalRecord(req: Request, res: Response) {
+export async function uploadMedicalRecord(req: Request, res: Response) {
   try {
-    const file = req.file as MulterFile;
-    const { diagnosis, notes } = req.body as { diagnosis?: string; notes?: string };
-    const { patient, doctor } = resolvePatientAndDoctor(req);
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!patient || !doctor) {
-      return res.status(400).json({ message: "patientId and doctorId are required" });
-    }
+    const { doctorId, notes } = req.body as { doctorId?: string; notes?: string };
+    const file = req.file;
 
-    if (!file) {
-      return res.status(400).json({ message: "File upload is required" });
+    if (!doctorId || !file) {
+      return res.status(400).json({ message: "doctorId and file are required" });
     }
 
     const record = await MedicalRecord.create({
-      patient,
-      doctor,
-      diagnosis,
-      notes,
-      file: {
-        originalName: file.originalname,
-        storedName: file.filename,
-        mimeType: file.mimetype,
-        size: file.size,
-        path: file.path
-      }
+      patient: req.user.id,
+      doctor: doctorId,
+      fileUrl: `/uploads/${file.filename}`,
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      notes: notes ? String(notes) : undefined,
     });
 
-    return res.status(201).json(record);
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to create medical record" });
+    const populated = await MedicalRecord.findById(record._id)
+      .populate("patient", "name email city")
+      .populate("doctor", "name specialty city");
+
+    return res.status(201).json(populated);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
+  }
+}
+
+export async function getMyMedicalRecords(req: Request, res: Response) {
+  try {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
+    const records = await MedicalRecord.find({ patient: req.user.id })
+      .populate("doctor", "name specialty city")
+      .sort({ createdAt: -1 });
+
+    return res.json(records);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
   }
 }
 
 export async function getDoctorMedicalRecords(req: Request, res: Response) {
   try {
-    const doctorId = req.user?.id;
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!doctorId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const records = await MedicalRecord.find({ doctor: doctorId })
-      .populate("patient", "name email")
+    const records = await MedicalRecord.find({ doctor: req.user.id })
+      .populate("patient", "name email city")
       .sort({ createdAt: -1 });
 
     return res.json(records);
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to load medical records" });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
   }
 }
