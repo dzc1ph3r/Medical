@@ -43,7 +43,7 @@ export default function Calendar() {
     () =>
       appointments.map((a) => ({
         id: a._id,
-        title: `${a.patient.name} (${a.status})`,
+        title: `${typeof a.patient === "string" ? "Patient" : a.patient.name} (${a.status})`,
         start: new Date(a.date),
         end: new Date(new Date(a.date).getTime() + 30 * 60000),
         resource: a,
@@ -94,7 +94,13 @@ export default function Calendar() {
       {selected && (
         <div style={{ marginTop: 12, border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
           <h3>RDV sélectionné</h3>
-          <p><b>Patient:</b> {selected.patient.name} — {selected.patient.email}</p>
+          <p>
+            <b>Patient:</b>{" "}
+            {typeof selected.patient === "string" ? selected.patient : selected.patient.name}
+            {typeof selected.patient === "string" || !selected.patient.email
+              ? null
+              : ` — ${selected.patient.email}`}
+          </p>
           <p><b>Date:</b> {new Date(selected.date).toLocaleString("fr-FR")}</p>
           <p><b>Status:</b> {selected.status}</p>
           {selected.cancelReason && <p><b>Raison:</b> {selected.cancelReason}</p>}
