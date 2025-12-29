@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Calendar as BigCalendar, dateFnsLocalizer } from "react-big-calendar";
+import { Calendar as BigCalendar, dateFnsLocalizer, View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -22,6 +22,8 @@ export default function Calendar() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selected, setSelected] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<View>("week");
+  const [date, setDate] = useState<Date>(new Date());
 
   const load = async () => {
     if (!token) return;
@@ -85,10 +87,15 @@ export default function Calendar() {
       <BigCalendar
         localizer={localizer}
         events={events}
+        view={view}
+        onView={(next) => setView(next)}
+        date={date}
+        onNavigate={(next) => setDate(next)}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 600, marginTop: 12 }}
         onSelectEvent={(e: any) => setSelected(e.resource as Appointment)}
+        views={["month", "week", "day", "agenda"]}
       />
 
       {selected && (

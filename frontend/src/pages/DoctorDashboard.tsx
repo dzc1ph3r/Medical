@@ -2,19 +2,30 @@ import { useEffect, useMemo, useState } from "react";
 import Calendar from "../components/Calendar";
 import { updateMe, updatePassword } from "../api/user.api";
 import { getDoctorMedicalRecords } from "../api/medicalRecord.api";
+import {
+  getMyDoctorAppointments,
+  rescheduleAppointment,
+  updateAppointmentStatus,
+} from "../api/appointment.api";
 import { useAuth } from "../context/AuthContext";
 import { specialties } from "../utils/specialties";
 import { wilayas } from "../utils/wilayas";
 import type { MedicalRecord } from "../types/medicalRecord";
+import type { Appointment } from "../types/appointment";
 
 export default function DoctorDashboard() {
   const { token, user, refreshMe } = useAuth();
-  const [activeTab, setActiveTab] = useState<"calendar" | "documents" | "profile">("calendar");
+  const [activeTab, setActiveTab] = useState<
+    "calendar" | "appointments" | "documents" | "profile"
+  >("calendar");
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [recordLoading, setRecordLoading] = useState(false);
   const [recordError, setRecordError] = useState<string | null>(null);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentLoading, setAppointmentLoading] = useState(false);
+  const [appointmentError, setAppointmentError] = useState<string | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
@@ -91,6 +102,47 @@ export default function DoctorDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
 
+  const loadAppointments = async () => {
+    if (!token) return;
+    setAppointmentLoading(true);
+    try {
+      const res = await getMyDoctorAppointments(token);
+      setAppointments(res.data);
+    } catch (err: any) {
+      setAppointmentError(err?.response?.data?.message || "Impossible de charger les rendez-vous");
+    } finally {
+      setAppointmentLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "appointments") {
+      loadAppointments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, token]);
+
+  const acceptAppointment = async (appointmentId: string) => {
+    if (!token) return;
+    await updateAppointmentStatus(token, appointmentId, "ACCEPTED");
+    await loadAppointments();
+  };
+
+  const cancelAppointment = async (appointmentId: string) => {
+    if (!token) return;
+    const reason = prompt("Raison de l'annulation ?") || "";
+    await updateAppointmentStatus(token, appointmentId, "CANCELLED", reason);
+    await loadAppointments();
+  };
+
+  const reschedule = async (appointmentId: string) => {
+    if (!token) return;
+    const iso = prompt("Nouvelle date ISO (ex: 2026-01-15T10:00:00.000Z) ?");
+    if (!iso) return;
+    await rescheduleAppointment(token, appointmentId, iso);
+    await loadAppointments();
+  };
+
   const submitPassword = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!token) return;
@@ -125,10 +177,16 @@ export default function DoctorDashboard() {
             Calendrier
           </button>
           <button
+            className={`tab-button ${activeTab === "appointments" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("appointments")}
+          >
+            Rendez-vous
+          </button>
+          <button
             className={`tab-button ${activeTab === "documents" ? "is-active" : ""}`}
             onClick={() => setActiveTab("documents")}
           >
-            Dossiers
+            Patients & dossiers
           </button>
           <button
             className={`tab-button ${activeTab === "profile" ? "is-active" : ""}`}
@@ -145,8 +203,49 @@ export default function DoctorDashboard() {
         </div>
       )}
 
+      {activeTab === "appointments" && (
+        <div className="tab-panel">
+          {appointmentLoading && <p>Chargement...</p>}
+          {appointmentError && <p className="form-error">{appointmentError}</p>}
+          <div className="card-grid">
+            {appointments.map((appointment) => (
+              <div key={appointment._id} className="info-card">
+                <p>
+                  <b>Patient:</b>{" "}
+                  {typeof appointment.patient === "string"
+                    ? appointment.patient
+                    : appointment.patient.name}
+                </p>
+                <p>
+                  <b>Date:</b> {new Date(appointment.date).toLocaleString("fr-FR")}
+                </p>
+                <p>
+                  <b>Status:</b> {appointment.status}
+                </p>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button
+                    onClick={() => acceptAppointment(appointment._id)}
+                    disabled={appointment.status === "ACCEPTED"}
+                  >
+                    Accepter
+                  </button>
+                  <button onClick={() => reschedule(appointment._id)}>Reporter</button>
+                  <button
+                    onClick={() => cancelAppointment(appointment._id)}
+                    disabled={appointment.status === "CANCELLED"}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {activeTab === "documents" && (
         <div className="tab-panel">
+          <h3>Patients et dossiers médicaux</h3>
           {recordLoading && <p>Chargement...</p>}
           {recordError && <p className="form-error">{recordError}</p>}
           <div className="card-grid">
