@@ -21,7 +21,7 @@ export default function Navbar() {
         </Link>
 
         <nav className="navbar__links">
-          <Link to="/">Médecins</Link>
+          {user?.role !== "DOCTOR" && <Link to="/">Médecins</Link>}
 
           {user?.role === "PATIENT" && (
             <Link to="/patient/dashboard" style={{ textDecoration: "none", color: "#334155" }}>

@@ -1,11 +1,15 @@
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { getDoctors } from "../api/doctor.api";
-import { WILAYAS } from "../utils/wilayas";
+import { useAuth } from "../context/AuthContext";
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState<any[]>([]);
-  const [specialty, setSpecialty] = useState("");
-  const [wilaya, setWilaya] = useState("");
+  const { user } = useAuth();
+
+  if (user?.role === "DOCTOR") {
+    return <Navigate to="/doctor/dashboard" replace />;
+  }
 
   useEffect(() => {
     getDoctors({})

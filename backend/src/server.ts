@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
 import appointmentRoutes from "./routes/appointment.routes";
 import doctorRoutes from "./routes/doctor.routes";
-import medicalRecordRoutes from "./routes/medicalRecord.routes";
+import userRoutes from "./routes/user.routes";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
-app.use("/api/medical-records", medicalRecordRoutes);
+app.use("/api/users", userRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI as string)
