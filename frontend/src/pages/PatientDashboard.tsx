@@ -3,7 +3,12 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getMyAppointments } from "../api/appointment.api";
 import { updateMe, updatePassword } from "../api/user.api";
-import { getMyMedicalRecords, uploadMedicalRecord } from "../api/medicalRecord.api";
+import {
+  deleteMedicalRecord,
+  getMedicalRecordFile,
+  getMyMedicalRecords,
+  uploadMedicalRecord,
+} from "../api/medicalRecord.api";
 import { wilayas } from "../utils/wilayas";
 import type { Appointment, PersonRef } from "../types/appointment";
 import type { MedicalRecord } from "../types/medicalRecord";
@@ -42,6 +47,7 @@ export default function PatientDashboard() {
   const [recordFile, setRecordFile] = useState<File | null>(null);
   const [recordSuccess, setRecordSuccess] = useState<string | null>(null);
   const [recordPreviewUrl, setRecordPreviewUrl] = useState<string | null>(null);
+  const [recordPreviewError, setRecordPreviewError] = useState<string | null>(null);
 
   const profileDirty = useMemo(
     () =>
@@ -72,6 +78,12 @@ export default function PatientDashboard() {
     setCity(user?.city ?? "");
     setGender(user?.gender ?? "");
   }, [user]);
+
+  useEffect(() => {
+    return () => {
+      if (recordPreviewUrl) URL.revokeObjectURL(recordPreviewUrl);
+    };
+  }, [recordPreviewUrl]);
 
   const loadRecords = async () => {
     if (!token) return;
@@ -151,6 +163,32 @@ export default function PatientDashboard() {
       await loadRecords();
     } catch (err: any) {
       setRecordError(err?.response?.data?.message || "Impossible d'envoyer le document");
+    }
+  };
+
+  const openRecord = async (recordId: string) => {
+    if (!token) return;
+    setRecordPreviewError(null);
+    try {
+      const blob = await getMedicalRecordFile(token, recordId);
+      const url = URL.createObjectURL(blob);
+      if (recordPreviewUrl) URL.revokeObjectURL(recordPreviewUrl);
+      setRecordPreviewUrl(url);
+    } catch (err: any) {
+      setRecordPreviewError(
+        err?.response?.data?.message || "Impossible d'ouvrir le document"
+      );
+    }
+  };
+
+  const removeRecord = async (recordId: string) => {
+    if (!token) return;
+    if (!confirm("Supprimer ce document ?")) return;
+    try {
+      await deleteMedicalRecord(token, recordId);
+      await loadRecords();
+    } catch (err: any) {
+      setRecordError(err?.response?.data?.message || "Suppression impossible");
     }
   };
 
@@ -284,13 +322,22 @@ export default function PatientDashboard() {
                   <p>
                     <b>Médecin:</b> {record.doctor?.name || "Non renseigné"}
                   </p>
-                  <button
-                    className="button-link"
-                    type="button"
-                    onClick={() => setRecordPreviewUrl(record.fileUrl ?? null)}
-                  >
-                    Ouvrir
-                  </button>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button
+                      className="button-link"
+                      type="button"
+                      onClick={() => openRecord(record._id)}
+                    >
+                      Ouvrir
+                    </button>
+                    <button
+                      className="button-link"
+                      type="button"
+                      onClick={() => removeRecord(record._id)}
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
               ))}
           </div>
@@ -306,6 +353,7 @@ export default function PatientDashboard() {
               <iframe title="document" src={recordPreviewUrl} className="preview-frame" />
             </div>
           )}
+          {recordPreviewError && <p className="form-error">{recordPreviewError}</p>}
         </div>
       )}
 

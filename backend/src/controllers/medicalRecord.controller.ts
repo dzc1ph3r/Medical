@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import path from "path";
+import fs from "fs";
 import MedicalRecord from "../models/MedicalRecord";
 
 const buildFileUrl = (id: string) => `/api/medical-records/${id}/file`;
@@ -93,6 +94,32 @@ export async function getMedicalRecordFile(req: Request, res: Response) {
 
     const filePath = path.join(process.cwd(), "uploads", record.fileName);
     return res.sendFile(filePath);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
+  }
+}
+
+export async function deleteMedicalRecord(req: Request, res: Response) {
+  try {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
+    const { id } = req.params;
+    const record = await MedicalRecord.findById(id);
+    if (!record) return res.status(404).json({ message: "Document not found" });
+
+    const isOwner =
+      String(record.patient) === req.user.id || String(record.doctor) === req.user.id;
+    if (!isOwner && req.user.role !== "ADMIN") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const filePath = path.join(process.cwd(), "uploads", record.fileName);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    await record.deleteOne();
+    return res.json({ message: "Document deleted" });
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err) });
   }
