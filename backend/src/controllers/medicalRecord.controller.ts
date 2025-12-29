@@ -50,3 +50,21 @@ export async function createMedicalRecord(req: Request, res: Response) {
     return res.status(500).json({ message: "Failed to create medical record" });
   }
 }
+
+export async function getDoctorMedicalRecords(req: Request, res: Response) {
+  try {
+    const doctorId = req.user?.id;
+
+    if (!doctorId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const records = await MedicalRecord.find({ doctor: doctorId })
+      .populate("patient", "name email")
+      .sort({ createdAt: -1 });
+
+    return res.json(records);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to load medical records" });
+  }
+}

@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { auth } from "../middleware/auth.middleware";
 import { requireRole } from "../middleware/role.middleware";
-import { createMedicalRecord } from "../controllers/medicalRecord.controller";
+import { createMedicalRecord, getDoctorMedicalRecords } from "../controllers/medicalRecord.controller";
 
 const uploadDir = path.join(process.cwd(), "uploads", "medical-records");
 
@@ -34,5 +34,7 @@ router.post(
   upload.single("file"),
   createMedicalRecord
 );
+
+router.get("/doctor/me", auth, requireRole("DOCTOR"), getDoctorMedicalRecords);
 
 export default router;
