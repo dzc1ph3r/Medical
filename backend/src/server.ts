@@ -17,6 +17,19 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
+
+const ensureUploadsDir = () => {
+  const dir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.chmodSync(dir, 0o700);
+  }
+  return dir;
+};
+
+ensureUploadsDir();
 
 const ensureUploadsDir = () => {
   const dir = path.join(process.cwd(), "uploads");
