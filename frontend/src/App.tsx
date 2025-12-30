@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PatientDashboard from "./pages/PatientDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,14 @@ export default function App() {
           element={
             <RoleRoute role="DOCTOR">
               <DoctorDashboard />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RoleRoute role="ADMIN">
+              <AdminDashboard />
             </RoleRoute>
           }
         />

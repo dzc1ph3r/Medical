@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 type JwtPayload = {
   id: string;
-  role: "DOCTOR" | "PATIENT";
+  role: "DOCTOR" | "PATIENT" | "ADMIN";
 };
 
 declare global {
