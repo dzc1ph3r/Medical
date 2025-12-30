@@ -2,10 +2,23 @@ import axios from "axios";
 
 const API = "http://localhost:5000/api";
 
-export const login = (email: string, password: string) =>
-  axios.post(`${API}/auth/login`, { email, password });
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
 
-export const register = (payload: any) =>
+export type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+  city?: string;
+  gender?: "MALE" | "FEMALE";
+};
+
+export const login = (payload: LoginPayload) =>
+  axios.post(`${API}/auth/login`, payload);
+
+export const register = (payload: RegisterPayload) =>
   axios.post(`${API}/auth/register`, payload);
 
 export const me = (token: string) =>

@@ -11,30 +11,41 @@ export default function Navbar() {
   };
 
   return (
-    <header
-      style={{
-        padding: "12px 18px",
-        borderBottom: "1px solid #e5e5e5",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <Link to="/" style={{ fontWeight: 700, textDecoration: "none" }}>
+    <header className="navbar bg-white/80 backdrop-blur">
+      <div className="navbar__left">
+        <Link to="/" className="navbar__brand flex items-center gap-2">
+          <span className="logo-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 2C7.03 2 3 6.03 3 11c0 4.5 3.14 8.26 7.39 8.94L12 22l1.61-2.06C17.86 19.26 21 15.5 21 11c0-4.97-4.03-9-9-9z"
+                fill="#38bdf8"
+              />
+              <path
+                d="M9 10.5h2.5V8h2v2.5H16v2h-2.5V15h-2v-2.5H9v-2z"
+                fill="#0f172a"
+              />
+            </svg>
+          </span>
           MedCare
         </Link>
 
-        <nav style={{ display: "flex", gap: 12 }}>
-          <Link to="/">Médecins</Link>
+        <nav className="navbar__links">
+          {user?.role !== "DOCTOR" && <Link to="/">Médecins</Link>}
 
           {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
           {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
+          {user?.role === "ADMIN" && <Link to="/admin">Admin</Link>}
         </nav>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div className="navbar__actions">
         {!user ? (
           <>
             <Link to="/login">Connexion</Link>
@@ -42,7 +53,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <span style={{ opacity: 0.8 }}>
+            <span className="navbar__user">
               {user.name} — <b>{user.role}</b>
             </span>
             <button onClick={onLogout}>Déconnexion</button>

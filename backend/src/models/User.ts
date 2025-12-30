@@ -16,11 +16,13 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["PATIENT", "DOCTOR"],
+      enum: ["PATIENT", "DOCTOR", "ADMIN"],
       required: true,
     },
 
     specialty: { type: String, trim: true }, // requis côté controller si role=DOCTOR
+    consultationFee: { type: Number, min: 0 },
+    gender: { type: String, enum: ["MALE", "FEMALE"] },
     city: { type: String, trim: true },
   },
   { timestamps: true }
