@@ -31,11 +31,6 @@ export async function register(req: Request, res: Response) {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    const parsedFee =
-      consultationFee !== undefined && consultationFee !== null
-        ? Number(consultationFee)
-        : undefined;
-
     const user = await User.create({
       name: String(name).trim(),
       email: normalizedEmail,
