@@ -1,36 +1,25 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getMyNotifications, markNotificationRead } from "../api/notification.api";
+import NotificationBell from "../components/NotificationBell";
+import {
+  User,
+  LogOut,
+  Home,
+  Stethoscope,
+  Users,
+  Shield,
+  Calendar,
+  Menu,
+  X,
+  ChevronDown
+} from "lucide-react";
 
 export default function Navbar() {
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [openNotifications, setOpenNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [notificationError, setNotificationError] = useState<string | null>(null);
-
-  const unreadCount = useMemo(
-    () => notifications.filter((notification) => !notification.read).length,
-    [notifications]
-  );
-
-  useEffect(() => {
-    if (!user || !token) return;
-
-    const load = async () => {
-      try {
-        const res = await getMyNotifications(token);
-        setNotifications(res.data);
-      } catch (err: any) {
-        setNotificationError(err?.response?.data?.message || "Notifications indisponibles");
-      }
-    };
-
-    load();
-    const interval = setInterval(load, 15000);
-    return () => clearInterval(interval);
-  }, [user, token]);
+  const [openMobileMenu, setOpenMobileMenu] = useState(false);
+  const [openProfileMenu, setOpenProfileMenu] = useState(false);
 
   const onLogout = () => {
     logout();
@@ -38,143 +27,314 @@ export default function Navbar() {
   };
 
   const dashboardPath =
-    user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
+    user?.role === "DOCTOR" ? "/doctor/dashboard" : 
+    user?.role === "ADMIN" ? "/admin" : 
+    "/patient/dashboard";
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "DOCTOR": return "Médecin";
+      case "PATIENT": return "Patient";
+      case "ADMIN": return "Administrateur";
+      default: return role;
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "DOCTOR": return "bg-gradient-to-r from-blue-500 to-blue-600";
+      case "PATIENT": return "bg-gradient-to-r from-emerald-500 to-emerald-600";
+      case "ADMIN": return "bg-gradient-to-r from-purple-500 to-purple-600";
+      default: return "bg-gradient-to-r from-slate-500 to-slate-600";
+    }
+  };
 
   return (
-    <header className="navbar bg-white/80 backdrop-blur">
-      <div className="navbar__left">
-        <Link to="/" className="navbar__brand flex items-center gap-2">
-          <span className="logo-icon">
-            <svg
-              version="1.1"
-              id="Icon_Set"
-              xmlns="http://www.w3.org/2000/svg"
-              x="0"
-              y="0"
-              viewBox="0 0 512 512"
-              aria-hidden="true"
-            >
-              <style>{".st2{fill:#4c4372}"}</style>
-              <g id="Medical_Folder">
-                <circle cx="256" cy="256" r="207" style={{ fill: "#f0c48a" }} />
-                <path
-                  d="M400.046 325.372H111.954V149.075c0-13.099 10.619-23.718 23.718-23.718h71.417l21.853 22.823h147.386c13.099 0 23.718 10.619 23.718 23.718v153.474z"
-                  style={{ fill: "#7babf1" }}
-                />
-                <path
-                  className="st2"
-                  d="M400.046 331.373H111.954a6 6 0 0 1-6-6V149.075c0-16.387 13.331-29.718 29.718-29.718h71.417c1.637 0 3.202.668 4.334 1.851l20.08 20.972h144.825c16.387 0 29.718 13.332 29.718 29.718v153.475a6 6 0 0 1-6 6zm-282.092-12h276.092V171.898c0-9.77-7.948-17.718-17.718-17.718H228.941a5.997 5.997 0 0 1-4.334-1.851l-20.08-20.972h-68.855c-9.77 0-17.718 7.948-17.718 17.718v170.298z"
-                />
-                <path
-                  d="M376.328 386.643H135.672c-13.099 0-23.718-10.619-23.718-23.718V210.346c0-13.099 10.619-23.718 23.718-23.718h240.656c13.099 0 23.718 10.619 23.718 23.718v152.579c0 13.099-10.619 23.718-23.718 23.718z"
-                  style={{ fill: "#d3e6f8" }}
-                />
-                <path
-                  d="M376.328 186.627h-18.185v200.016h18.185c13.099 0 23.718-10.619 23.718-23.719V210.346c0-13.1-10.619-23.719-23.718-23.719z"
-                  style={{ fill: "#a4cff2" }}
-                />
-                <path
-                  style={{ fill: "#fd919e" }}
-                  d="M311.427 267.622h-36.414v-36.414h-38.026v36.414h-36.414v38.027h36.414v36.414h38.026v-36.414h36.414z"
-                />
-                <path
-                  className="st2"
-                  d="M275.014 348.062h-38.027a6 6 0 0 1-6-6v-30.414h-30.414a6 6 0 0 1-6-6v-38.027a6 6 0 0 1 6-6h30.414v-30.414a6 6 0 0 1 6-6h38.027a6 6 0 0 1 6 6v30.414h30.414a6 6 0 0 1 6 6v38.027a6 6 0 0 1-6 6h-30.414v30.414a6 6 0 0 1-6 6zm-32.028-12h26.027v-30.414a6 6 0 0 1 6-6h30.414v-26.027h-30.414a6 6 0 0 1-6-6v-30.414h-26.027v30.414a6 6 0 0 1-6 6h-30.414v26.027h30.414a6 6 0 0 1 6 6v30.414z"
-                />
-                <g>
-                  <path
-                    className="st2"
-                    d="M376.328 392.643H135.672c-16.387 0-29.718-13.332-29.718-29.718V210.346c0-16.387 13.331-29.718 29.718-29.718h240.656c16.387 0 29.718 13.332 29.718 29.718v152.579c0 16.387-13.331 29.718-29.718 29.718zM135.672 192.627c-9.77 0-17.718 7.948-17.718 17.718v152.579c0 9.77 7.948 17.718 17.718 17.718h240.656c9.77 0 17.718-7.948 17.718-17.718V210.346c0-9.77-7.948-17.718-17.718-17.718H135.672z"
-                  />
-                </g>
-              </g>
-            </svg>
-          </span>
-          MedCare
-        </Link>
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-slate-200/50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-xl group-hover:shadow-blue-500/40 transition-all duration-300">
+                <Stethoscope className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors duration-200">
+                  MediConnect
+                </h1>
+                <p className="text-xs text-slate-500">Santé Connectée</p>
+              </div>
+            </Link>
 
-        <nav className="navbar__links">
-          <Link to="/">Accueil</Link>
-          {user?.role !== "DOCTOR" && <Link to="/doctors">Médecins</Link>}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex ml-10 space-x-8">
+              <Link 
+                to="/" 
+                className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Accueil
+              </Link>
+              
+              {user?.role !== "DOCTOR" && user?.role !== "ADMIN" && (
+                <Link 
+                  to="/doctors" 
+                  className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Médecins
+                </Link>
+              )}
 
-          {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
-          {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
-          {user?.role === "ADMIN" && <Link to="/admin">Admin</Link>}
-        </nav>
+              {user?.role === "PATIENT" && (
+                <Link 
+                  to="/patient/dashboard" 
+                  className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Mes RDV
+                </Link>
+              )}
+              
+              {user?.role === "DOCTOR" && (
+                <Link 
+                  to="/doctor/dashboard" 
+                  className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Calendrier
+                </Link>
+              )}
+              
+              {user?.role === "ADMIN" && (
+                <Link 
+                  to="/admin" 
+                  className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Administration
+                </Link>
+              )}
+            </nav>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <>
+                {/* Notification Bell Component */}
+                <NotificationBell 
+                  showForRoles={['PATIENT', 'DOCTOR', 'ADMIN']}
+                  className="mr-2"
+                />
+
+                {/* User Profile Menu */}
+                <div className="relative">
+                  <button
+                    className="flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-100 transition-colors duration-200 group"
+                    onClick={() => setOpenProfileMenu(!openProfileMenu)}
+                  >
+                    <div className={`w-10 h-10 rounded-xl ${getRoleColor(user.role)} flex items-center justify-center text-white font-bold`}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-slate-900">{user.name}</div>
+                      <div className="text-xs text-slate-500 flex items-center">
+                        {getRoleLabel(user.role)}
+                        <ChevronDown className="w-3 h-3 ml-1 group-hover:rotate-180 transition-transform duration-200" />
+                      </div>
+                    </div>
+                  </button>
+
+                  {openProfileMenu && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setOpenProfileMenu(false)}
+                      />
+                      <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 animate-slide-in-down">
+                        <div className="p-4 border-b border-slate-200">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-12 h-12 rounded-xl ${getRoleColor(user.role)} flex items-center justify-center text-white font-bold text-lg`}>
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{user.name}</h4>
+                              <p className="text-sm text-slate-500">{getRoleLabel(user.role)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-2">
+                          <Link
+                            to={dashboardPath}
+                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                            onClick={() => setOpenProfileMenu(false)}
+                          >
+                            <User className="w-4 h-4 mr-3 text-slate-500" />
+                            Mon tableau de bord
+                          </Link>
+                          
+                          <Link
+                            to="/profile"
+                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                            onClick={() => setOpenProfileMenu(false)}
+                          >
+                            <User className="w-4 h-4 mr-3 text-slate-500" />
+                            Mon profil
+                          </Link>
+                          
+                          <Link
+                            to="/settings"
+                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                            onClick={() => setOpenProfileMenu(false)}
+                          >
+                            <User className="w-4 h-4 mr-3 text-slate-500" />
+                            Paramètres
+                          </Link>
+
+                          <Link
+                            to="/notifications"
+                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                            onClick={() => setOpenProfileMenu(false)}
+                          >
+                            <User className="w-4 h-4 mr-3 text-slate-500" />
+                            Toutes les notifications
+                          </Link>
+                        </div>
+                        
+                        <div className="p-4 border-t border-slate-200">
+                          <button
+                            onClick={onLogout}
+                            className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                          >
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Déconnexion
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-emerald-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105"
+                >
+                  Inscription Gratuite
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+            onClick={() => setOpenMobileMenu(!openMobileMenu)}
+          >
+            {openMobileMenu ? (
+              <X className="w-6 h-6 text-slate-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-slate-700" />
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="navbar__actions">
-        {user && (
-          <div className="notification">
-            <button
-              className="notification-button"
-              onClick={() => setOpenNotifications((prev) => !prev)}
-              type="button"
-            >
-              <span className="notification-icon">🔔</span>
-              {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
-            </button>
-            {openNotifications && (
-              <div className="notification-panel">
-                <h4>Notifications</h4>
-                {notificationError && <p className="form-error">{notificationError}</p>}
-                {!notificationError && notifications.length === 0 && (
-                  <p className="muted">Aucune notification.</p>
-                )}
-                <ul>
-                  {notifications.map((notification) => (
-                    <li key={notification._id}>
-                      <p>{notification.message}</p>
-                      {!notification.read && (
-                        <button
-                          type="button"
-                          className="button-link"
-                          onClick={async () => {
-                            if (!token) return;
-                            await markNotificationRead(token, notification._id);
-                            const res = await getMyNotifications(token);
-                            setNotifications(res.data);
-                          }}
-                        >
-                          Marquer comme lu
-                        </button>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+      {/* Mobile Menu */}
+      {openMobileMenu && (
+        <div className="md:hidden bg-white border-t border-slate-200 shadow-lg animate-slide-in-down">
+          <div className="px-4 py-3">
+            {user ? (
+              <div className="mb-6">
+                <div className="flex items-center space-x-3 p-3 bg-slate-50 rounded-xl mb-4">
+                  <div className={`w-12 h-12 rounded-xl ${getRoleColor(user.role)} flex items-center justify-center text-white font-bold`}>
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900">{user.name}</h4>
+                    <p className="text-sm text-slate-500">{getRoleLabel(user.role)}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Link
+                    to={dashboardPath}
+                    className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                    onClick={() => setOpenMobileMenu(false)}
+                  >
+                    <User className="w-4 h-4 mr-3 text-slate-500" />
+                    Mon tableau de bord
+                  </Link>
+                  
+                  <Link
+                    to="/"
+                    className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                    onClick={() => setOpenMobileMenu(false)}
+                  >
+                    <Home className="w-4 h-4 mr-3 text-slate-500" />
+                    Accueil
+                  </Link>
+                  
+                  {user?.role !== "DOCTOR" && user?.role !== "ADMIN" && (
+                    <Link
+                      to="/doctors"
+                      className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                      onClick={() => setOpenMobileMenu(false)}
+                    >
+                      <Users className="w-4 h-4 mr-3 text-slate-500" />
+                      Médecins
+                    </Link>
+                  )}
+                  
+                  <Link
+                    to="/notifications"
+                    className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                    onClick={() => setOpenMobileMenu(false)}
+                  >
+                    <User className="w-4 h-4 mr-3 text-slate-500" />
+                    Mes notifications
+                  </Link>
+                  
+                  <button
+                    onClick={onLogout}
+                    className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Déconnexion
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <Link
+                  to="/login"
+                  className="block px-4 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                  onClick={() => setOpenMobileMenu(false)}
+                >
+                  Connexion
+                </Link>
+                <Link
+                  to="/register"
+                  className="block px-4 py-3 text-center text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-emerald-500 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                  onClick={() => setOpenMobileMenu(false)}
+                >
+                  Inscription Gratuite
+                </Link>
               </div>
             )}
           </div>
-        )}
-        {!user ? (
-          <>
-            <Link to="/login" style={{ textDecoration: "none", color: "#334155" }}>
-              Connexion
-            </Link>
-            <Link to="/register" style={{ textDecoration: "none", color: "#334155" }}>
-              Inscription
-            </Link>
-          </>
-        ) : (
-          <>
-            <span className="navbar__user">
-              {user.name} — <b>{user.role}</b>
-            </span>
-            <button
-              onClick={onLogout}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 8,
-                border: "1px solid #e2e8f0",
-                background: "#f8fafc",
-                cursor: "pointer",
-              }}
-            >
-              Déconnexion
-            </button>
-          </>
-        )}
-      </div>
+        </div>
+      )}
     </header>
   );
 }

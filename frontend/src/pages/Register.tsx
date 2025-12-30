@@ -16,7 +16,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [city, setCity] = useState("");
-  const [gender, setGender] = useState<"MALE" | "FEMALE" | "">("");
+  const [gender, setGender] = useState<"MALE" | "FEMALE" | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +30,8 @@ export default function Register() {
         name,
         email,
         password,
-        gender: gender || undefined,
+        role: "PATIENT",
+        gender,
         city: city || undefined,
       };
 
@@ -46,8 +47,8 @@ export default function Register() {
       } else {
         navigate("/patient/dashboard", { replace: true });
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Inscription impossible");
+    } catch (err: unknown) {
+      setError((err as any)?.response?.data?.message || "Inscription impossible");
     } finally {
       setLoading(false);
     }
@@ -114,8 +115,8 @@ export default function Register() {
             <label>Sexe</label>
             <select
               className="form-input"
-              value={gender}
-              onChange={(e) => setGender(e.target.value as "MALE" | "FEMALE" | "")}
+              value={gender || ""}
+              onChange={(e) => setGender(e.target.value === "" ? undefined : e.target.value as "MALE" | "FEMALE")}
             >
               <option value="">Non spécifié</option>
               <option value="MALE">Homme</option>

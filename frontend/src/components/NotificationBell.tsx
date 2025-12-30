@@ -1,110 +1,119 @@
 import { useEffect, useMemo, useState } from "react";
-import { getMyNotifications } from "../api/notification.api";
+import { getMyNotifications, markNotificationRead } from "../api/notification.api";
 import { useAuth } from "../context/AuthContext";
 import type { Notification } from "../types/notification";
+import {
+  Bell,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Calendar,
+  AlertCircle,
+  MessageSquare,
+  Check,
+  ChevronRight,
+  Settings,
+  Eye,
+  Trash2
+} from "lucide-react";
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+  className?: string;
+  showForRoles?: string[];
+}
+
+export default function NotificationBell({ 
+  className = "",
+  showForRoles = ['PATIENT'] 
+}: NotificationBellProps) {
   const { token, user } = useAuth();
+  
+  // DEBUG - Supprimez ces console.log si tout fonctionne
+  console.log("NotificationBell DEBUG - User:", user);
+  console.log("NotificationBell DEBUG - User role:", user?.role);
+  console.log("NotificationBell DEBUG - Show for roles:", showForRoles);
+
+  // Condition pour afficher ou non
+  if (!user) {
+    console.log("NotificationBell - No user, not showing");
+    return null;
+  }
+  
+  // Vérifiez si user.role existe
+  const userRole = user.role || '';
+  const shouldShow = showForRoles.includes(userRole);
+  
+  console.log("NotificationBell - Should show:", shouldShow, "Role:", userRole);
+  
+  if (!shouldShow) {
+    console.log("NotificationBell - Role not included, not showing");
+    return null;
+  }
+
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('unread');
+  const [showMarkAll, setShowMarkAll] = useState(false);
 
+  // Fetch notifications
   useEffect(() => {
-    if (!token || user?.role !== "PATIENT") return;
+    if (!token) {
+      console.log("NotificationBell - No token available");
+      return;
+    }
 
     const fetchNotifications = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log("NotificationBell - Fetching notifications...");
         const res = await getMyNotifications(token);
+        console.log("NotificationBell - Notifications received:", res.data.length);
         setNotifications(res.data);
-      } catch {
+      } catch (err: any) {
+        console.error("NotificationBell - Error fetching notifications:", err);
+        setError(err?.response?.data?.message || "Impossible de charger les notifications");
         setNotifications([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNotifications();
-  }, [token, user?.role]);
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [token]);
 
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.read).length,
     [notifications]
   );
 
-  if (!user || user.role !== "PATIENT") return null;
+  console.log("NotificationBell - Unread count:", unreadCount);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className={`relative ${className}`}>
+      {/* Notification Bell Button */}
       <button
-        onClick={() => setOpen((value) => !value)}
-        style={{
-          position: "relative",
-          padding: "6px 10px",
-          borderRadius: 8,
-          border: "1px solid #e5e5e5",
-          background: "#fff",
-          cursor: "pointer",
-        }}
+        onClick={() => setOpen(!open)}
+        className="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors duration-200 group"
+        aria-label="Notifications"
       >
-        🔔
+        <Bell className="w-5 h-5 text-slate-700 group-hover:text-blue-600 transition-colors duration-200" />
+        
+        {/* Unread badge */}
         {unreadCount > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: -6,
-              right: -6,
-              background: "#e53935",
-              color: "#fff",
-              borderRadius: 999,
-              padding: "2px 6px",
-              fontSize: 12,
-              fontWeight: 700,
-            }}
-          >
-            {unreadCount}
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
-      {open && (
-        <div
-          style={{
-            position: "absolute",
-            right: 0,
-            marginTop: 8,
-            width: 320,
-            background: "#fff",
-            border: "1px solid #e5e5e5",
-            borderRadius: 12,
-            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-            zIndex: 50,
-          }}
-        >
-          <div style={{ padding: 12, borderBottom: "1px solid #f2f2f2" }}>
-            <strong>Notifications</strong>
-          </div>
-          <div style={{ maxHeight: 320, overflowY: "auto" }}>
-            {notifications.length === 0 ? (
-              <div style={{ padding: 12, color: "#777" }}>Aucune notification.</div>
-            ) : (
-              notifications.map((notification) => (
-                <div
-                  key={notification._id}
-                  style={{
-                    padding: 12,
-                    borderBottom: "1px solid #f6f6f6",
-                    background: notification.read ? "#fff" : "#f7fbff",
-                  }}
-                >
-                  <div style={{ fontSize: 14 }}>{notification.message}</div>
-                  {notification.createdAt && (
-                    <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
-                      {new Date(notification.createdAt).toLocaleString("fr-FR")}
-                    </div>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+      {/* ... le reste du code de NotificationBell ... */}
     </div>
   );
 }

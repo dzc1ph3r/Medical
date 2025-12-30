@@ -1,7 +1,7 @@
 export type Notification = {
   _id: string;
   message: string;
+  type: string;
   read: boolean;
-  appointment?: string;
   createdAt?: string;
 };
