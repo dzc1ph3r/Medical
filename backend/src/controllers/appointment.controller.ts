@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Appointment from "../models/Appointment";
+import Notification from "../models/Notification";
 
 /**
  * PATIENT - Create appointment (PENDING)
@@ -24,6 +25,12 @@ export const createAppointment = async (req: Request, res: Response) => {
       doctor: doctorId,
       date: when,
       status: "PENDING",
+    });
+
+    await Notification.create({
+      user: doctorId,
+      message: "Nouveau rendez-vous en attente.",
+      type: "APPOINTMENT_REQUEST",
     });
 
     const populated = await Appointment.findById(appt._id)
@@ -113,6 +120,17 @@ export const updateAppointmentStatus = async (req: Request, res: Response) => {
 
     await appt.save();
 
+    await Notification.create({
+      user: appt.patient,
+      message:
+        status === "ACCEPTED"
+          ? "Votre rendez-vous a été accepté."
+          : status === "CANCELLED"
+          ? "Votre rendez-vous a été annulé."
+          : "Votre rendez-vous a été mis à jour.",
+      type: "APPOINTMENT_STATUS",
+    });
+
     const populated = await Appointment.findById(appt._id)
       .populate("patient", "name email city")
       .populate("doctor", "name specialty city");
@@ -151,6 +169,12 @@ export const rescheduleAppointment = async (req: Request, res: Response) => {
     appt.cancelReason = undefined;
 
     await appt.save();
+
+    await Notification.create({
+      user: appt.patient,
+      message: "Votre rendez-vous a été reporté. Merci de confirmer la nouvelle date.",
+      type: "APPOINTMENT_RESCHEDULED",
+    });
 
     const populated = await Appointment.findById(appt._id)
       .populate("patient", "name email city")
