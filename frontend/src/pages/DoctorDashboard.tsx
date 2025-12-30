@@ -33,6 +33,9 @@ export default function DoctorDashboard() {
   const [appointmentLoading, setAppointmentLoading] = useState(false);
   const [appointmentError, setAppointmentError] = useState<string | null>(null);
   const [appointmentSuccess, setAppointmentSuccess] = useState<string | null>(null);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Appointment | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleError, setRescheduleError] = useState<string | null>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
@@ -158,10 +161,16 @@ export default function DoctorDashboard() {
     if (!token) return;
     setAppointmentSuccess(null);
     setAppointmentError(null);
-    const iso = prompt("Nouvelle date ISO (ex: 2026-01-15T10:00:00.000Z) ?");
-    if (!iso) return;
-    await rescheduleAppointment(token, appointmentId, iso);
+    setRescheduleError(null);
+    if (!rescheduleDate) {
+      setRescheduleError("Veuillez choisir une nouvelle date.");
+      return;
+    }
+
+    await rescheduleAppointment(token, appointmentId, new Date(rescheduleDate).toISOString());
     setAppointmentSuccess("Rendez-vous reporté avec succès.");
+    setRescheduleTarget(null);
+    setRescheduleDate("");
     await loadAppointments();
   };
 
@@ -275,7 +284,7 @@ export default function DoctorDashboard() {
                   <button
                     className="action-button action-button--accept"
                     onClick={() => acceptAppointment(appointment._id)}
-                    disabled={appointment.status === "ACCEPTED"}
+                    disabled={appointment.status !== "PENDING"}
                   >
                     <span className="action-icon" aria-hidden>
                       ✓
@@ -284,7 +293,12 @@ export default function DoctorDashboard() {
                   </button>
                   <button
                     className="action-button action-button--reschedule"
-                    onClick={() => reschedule(appointment._id)}
+                    onClick={() => {
+                      setRescheduleTarget(appointment);
+                      setRescheduleDate("");
+                      setRescheduleError(null);
+                    }}
+                    disabled={appointment.status !== "PENDING"}
                   >
                     <span className="action-icon" aria-hidden>
                       ↻
@@ -294,7 +308,7 @@ export default function DoctorDashboard() {
                   <button
                     className="action-button action-button--cancel"
                     onClick={() => cancelAppointment(appointment._id)}
-                    disabled={appointment.status === "CANCELLED"}
+                    disabled={appointment.status !== "PENDING"}
                   >
                     <span className="action-icon" aria-hidden>
                       ✕
@@ -304,6 +318,48 @@ export default function DoctorDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {rescheduleTarget && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <h3>Reporter le rendez-vous</h3>
+            <p className="muted">
+              Patient:{" "}
+              {typeof rescheduleTarget.patient === "string"
+                ? rescheduleTarget.patient
+                : rescheduleTarget.patient.name}
+            </p>
+            <div className="form-field">
+              <label>Nouvelle date</label>
+              <input
+                className="form-input"
+                type="datetime-local"
+                value={rescheduleDate}
+                onChange={(event) => setRescheduleDate(event.target.value)}
+              />
+            </div>
+            {rescheduleError && <p className="form-error">{rescheduleError}</p>}
+            <div className="modal-actions">
+              <button
+                className="action-button action-button--reschedule"
+                onClick={() => reschedule(rescheduleTarget._id)}
+              >
+                Confirmer
+              </button>
+              <button
+                className="action-button"
+                onClick={() => {
+                  setRescheduleTarget(null);
+                  setRescheduleDate("");
+                  setRescheduleError(null);
+                }}
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         </div>
       )}
