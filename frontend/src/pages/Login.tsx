@@ -34,7 +34,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await loginApi(email, password);
+      const res = await loginApi({ email, password });
 
       const token: string = res.data.token;
       const loggedUser: { role: "DOCTOR" | "PATIENT" | "ADMIN" } = res.data.user;
