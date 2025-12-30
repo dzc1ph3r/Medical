@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Calendar as BigCalendar, dateFnsLocalizer, View, Event } from "react-big-calendar";
+import { Calendar as BigCalendar, dateFnsLocalizer } from "react-big-calendar";
+import type { View, Event } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -23,7 +24,7 @@ import {
   Plus,
   Search,
   MoreVertical
-} from "lucide-react";
+} from "./icons";
 
 const locales = { fr };
 const localizer = dateFnsLocalizer({

@@ -1,7 +1,8 @@
 // frontend/src/hooks/useAuth.ts
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { login, register, LoginPayload, RegisterPayload } from '../api/auth.api';
+import { login, register } from '../api/auth.api';
+import type { LoginPayload, RegisterPayload } from '../api/auth.api';
 
 export default function useAuth() {
   const context = useContext(AuthContext);
@@ -19,7 +20,7 @@ export default function useAuth() {
     };
   }
 
-  const { token, user, loadingMe, setToken, refreshMe, logout } = context;
+  const { user, loadingMe, setToken, refreshMe, logout } = context;
   const isAuthenticated = !!user;
   const isLoading = loadingMe;
 

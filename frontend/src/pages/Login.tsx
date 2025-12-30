@@ -2,17 +2,17 @@ import { useState } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { login as loginApi } from "../api/auth.api";
 import { useAuth } from "../context/AuthContext";
-import { 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Mail, 
-  User, 
-  Stethoscope, 
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  User,
+  Stethoscope,
   Users,
   Shield,
   Loader2
-} from "lucide-react";
+} from "../components/icons";
 
 export default function Login() {
   const navigate = useNavigate();
