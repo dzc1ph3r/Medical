@@ -227,7 +227,7 @@ export default function PatientDashboard() {
         <div className="tab-panel">
           <p className="muted">
             Besoin d'un nouveau rendez-vous ?{" "}
-            <Link to="/">Chercher un médecin</Link>.
+            <Link to="/doctors">Chercher un médecin</Link>.
           </p>
 
           {loading && <p>Chargement...</p>}

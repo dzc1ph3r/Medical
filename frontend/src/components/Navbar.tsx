@@ -67,7 +67,8 @@ export default function Navbar() {
         </Link>
 
         <nav className="navbar__links">
-          {user?.role !== "DOCTOR" && <Link to="/">Médecins</Link>}
+          <Link to="/">Accueil</Link>
+          {user?.role !== "DOCTOR" && <Link to="/doctors">Médecins</Link>}
 
           {user?.role === "PATIENT" && <Link to="/patient/dashboard">Mes RDV</Link>}
           {user?.role === "DOCTOR" && <Link to="/doctor/dashboard">Calendrier</Link>}
