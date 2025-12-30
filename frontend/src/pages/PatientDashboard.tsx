@@ -390,7 +390,9 @@ export default function PatientDashboard() {
               <select
                 className="form-input"
                 value={gender}
-                onChange={(event) => setGender(event.target.value)}
+                onChange={(event) =>
+                  setGender(event.target.value as "" | "MALE" | "FEMALE")
+                }
               >
                 <option value="">Non spécifié</option>
                 <option value="MALE">Homme</option>
