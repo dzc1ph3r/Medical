@@ -7,13 +7,14 @@ type Role = "DOCTOR" | "PATIENT" | "ADMIN";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { name, email, password, role, city, gender } = req.body as {
+    const { name, email, password, role, city, gender, consultationFee } = req.body as {
       name: string;
       email: string;
       password: string;
       role: Role;
       city?: string;
       gender?: "MALE" | "FEMALE";
+      consultationFee?: number; // Assurez-vous que ce champ est récupéré de la requête
     };
 
     if (!name || !email || !password || !role) {
@@ -42,7 +43,7 @@ export async function register(req: Request, res: Response) {
       password: hashed,
       role: "PATIENT",
       specialty: undefined,
-      consultationFee: undefined,
+      consultationFee: parsedFee, // Utilisation de parsedFee ici
       gender: gender ?? undefined,
       city: city ? String(city).trim() : undefined,
     });
