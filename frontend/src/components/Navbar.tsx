@@ -37,6 +37,9 @@ export default function Navbar() {
     navigate("/login", { replace: true });
   };
 
+  const dashboardPath =
+    user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
+
   return (
     <header className="navbar bg-white/80 backdrop-blur">
       <div className="navbar__left">
@@ -145,15 +148,30 @@ export default function Navbar() {
         )}
         {!user ? (
           <>
-            <Link to="/login">Connexion</Link>
-            <Link to="/register">Inscription</Link>
+            <Link to="/login" style={{ textDecoration: "none", color: "#334155" }}>
+              Connexion
+            </Link>
+            <Link to="/register" style={{ textDecoration: "none", color: "#334155" }}>
+              Inscription
+            </Link>
           </>
         ) : (
           <>
             <span className="navbar__user">
               {user.name} — <b>{user.role}</b>
             </span>
-            <button onClick={onLogout}>Déconnexion</button>
+            <button
+              onClick={onLogout}
+              style={{
+                padding: "6px 12px",
+                borderRadius: 8,
+                border: "1px solid #e2e8f0",
+                background: "#f8fafc",
+                cursor: "pointer",
+              }}
+            >
+              Déconnexion
+            </button>
           </>
         )}
       </div>
