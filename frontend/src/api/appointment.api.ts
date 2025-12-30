@@ -1,7 +1,5 @@
-import axios from "axios";
+import { apiClient } from "./client";
 import type { Appointment } from "../types/appointment"; // Import du type depuis le fichier types/appointment.ts
-
-const API = import.meta.env.VITE_API_URL;
 
 // Définition du type AppointmentStatus
 export type AppointmentStatus = "PENDING" | "ACCEPTED" | "CANCELLED";
@@ -10,12 +8,12 @@ export type AppointmentStatus = "PENDING" | "ACCEPTED" | "CANCELLED";
 
 // Exports des fonctions API
 export const getMyDoctorAppointments = (token: string) =>
-  axios.get<Appointment[]>(`${API}/appointments/doctor/me`, {
+  apiClient.get<Appointment[]>("/appointments/doctor/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const getMyAppointments = (token: string) =>
-  axios.get<Appointment[]>(`${API}/appointments/me`, {
+  apiClient.get<Appointment[]>("/appointments/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -23,7 +21,7 @@ export const createAppointment = (
   token: string,
   payload: { doctorId: string; date: string }
 ) =>
-  axios.post<Appointment>(`${API}/appointments`, payload, {
+  apiClient.post<Appointment>("/appointments", payload, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -33,15 +31,15 @@ export const updateAppointmentStatus = (
   status: AppointmentStatus,
   cancelReason?: string
 ) =>
-  axios.patch<Appointment>(
-    `${API}/appointments/${id}/status`,
+  apiClient.patch<Appointment>(
+    `/appointments/${id}/status`,
     { status, cancelReason },
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
 export const rescheduleAppointment = (token: string, id: string, date: string) =>
-  axios.patch<Appointment>(
-    `${API}/appointments/${id}/reschedule`,
+  apiClient.patch<Appointment>(
+    `/appointments/${id}/reschedule`,
     { date },
     { headers: { Authorization: `Bearer ${token}` } }
   );
