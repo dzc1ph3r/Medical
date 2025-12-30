@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { Appointment } from "../types/appointment"; // Import du type depuis le fichier types/appointment.ts
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL;
 
 // Définition du type AppointmentStatus
 export type AppointmentStatus = "PENDING" | "ACCEPTED" | "CANCELLED";
