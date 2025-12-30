@@ -5,19 +5,15 @@ import type { Notification } from "../types/notification";
 import {
   Bell,
   CheckCircle,
-  XCircle,
   Clock,
   Calendar,
   AlertCircle,
   MessageSquare,
   Check,
-  ChevronRight,
-  ExternalLink,
   Settings,
   Eye,
-  EyeOff,
   Trash2
-} from "lucide-react";
+} from "../components/icons";
 
 export default function Notifications() {
   const { token, user } = useAuth();
