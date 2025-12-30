@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register as registerApi } from "../api/auth.api";
 import { useAuth } from "../context/AuthContext";
+import type { Role } from "../context/AuthContext";
 import { wilayas } from "../utils/wilayas";
 
 export default function Register() {

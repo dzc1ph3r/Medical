@@ -45,7 +45,7 @@ export default function DoctorDashboard() {
   const [name, setName] = useState(user?.name ?? "");
   const [city, setCity] = useState(user?.city ?? "");
   const [specialty, setSpecialty] = useState(user?.specialty ?? "");
-  const [gender, setGender] = useState(user?.gender ?? "");
+  const [gender, setGender] = useState<"" | "MALE" | "FEMALE">(user?.gender ?? "");
   const [consultationFee, setConsultationFee] = useState(
     user?.consultationFee !== undefined ? String(user.consultationFee) : ""
   );
@@ -82,7 +82,7 @@ export default function DoctorDashboard() {
         city,
         specialty,
         consultationFee: consultationFee ? Number(consultationFee) : undefined,
-        gender: gender || undefined,
+        gender: gender ? gender : undefined,
       });
       await refreshMe();
     } catch (err: any) {

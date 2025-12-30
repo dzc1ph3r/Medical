@@ -31,7 +31,7 @@ export default function PatientDashboard() {
 
   const [name, setName] = useState(user?.name ?? "");
   const [city, setCity] = useState(user?.city ?? "");
-  const [gender, setGender] = useState(user?.gender ?? "");
+  const [gender, setGender] = useState<"" | "MALE" | "FEMALE">(user?.gender ?? "");
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -112,7 +112,7 @@ export default function PatientDashboard() {
     setProfileError(null);
 
     try {
-      await updateMe(token, { name, city, gender: gender || undefined });
+      await updateMe(token, { name, city, gender: gender ? gender : undefined });
       await refreshMe();
     } catch (err: any) {
       setProfileError(err?.response?.data?.message || "Impossible de mettre à jour le profil");
