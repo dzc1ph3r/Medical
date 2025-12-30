@@ -29,6 +29,31 @@ const ensureUploadsDir = () => {
 
 ensureUploadsDir();
 
+<<<<<<< HEAD
+=======
+const ensureUploadsDir = () => {
+  const dir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.chmodSync(dir, 0o700);
+  }
+  return dir;
+};
+
+ensureUploadsDir();
+
+const ensureUploadsDir = () => {
+  const dir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.chmodSync(dir, 0o700);
+  }
+  return dir;
+};
+
+ensureUploadsDir();
+
+>>>>>>> 58d3b6a2e071a68a3adbb11bdfa557f08ef1d8e3
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
