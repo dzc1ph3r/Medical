@@ -1,6 +1,12 @@
 import axios from "axios";
 
-export const getDoctors = async (filters: any) => {
+type DoctorFilters = {
+  specialty?: string;
+  wilaya?: string;
+  city?: string;
+};
+
+export const getDoctors = async (filters: DoctorFilters) => {
   return axios.get("http://localhost:5000/api/doctors", { params: filters });
 };
 
