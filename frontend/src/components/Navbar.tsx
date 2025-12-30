@@ -102,6 +102,7 @@ export default function Navbar() {
                           type="button"
                           className="button-link"
                           onClick={async () => {
+                            if (!token) return;
                             await markNotificationRead(token, notification._id);
                             const res = await getMyNotifications(token);
                             setNotifications(res.data);
