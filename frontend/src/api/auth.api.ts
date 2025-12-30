@@ -1,6 +1,7 @@
 import axios from "axios";
+import { RegisterPayload, LoginPayload } from "../types/auth";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "https://medical-1-xoci.onrender.com/api";
 
 export type LoginPayload = {
   email: string;

@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
     consultationFee: { type: Number, min: 0 },
     gender: { type: String, enum: ["MALE", "FEMALE"] },
     city: { type: String, trim: true },
+    address: { type: String, trim: true },
+    lat: { type: Number },
+    lng: { type: Number },
   },
   { timestamps: true }
 );

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Appointment from "../models/Appointment";
+import Notification from "../models/Notification";
 
 /**
  * PATIENT - Create appointment (PENDING)
@@ -113,6 +114,23 @@ export const updateAppointmentStatus = async (req: Request, res: Response) => {
 
     await appt.save();
 
+    const statusLabel =
+      status === "ACCEPTED"
+        ? "accepté"
+        : status === "CANCELLED"
+          ? "annulé"
+          : "mis à jour";
+    let message = `Votre rendez-vous a été ${statusLabel}.`;
+    if (status === "CANCELLED" && cancelReason) {
+      message = `${message} Motif : ${cancelReason}.`;
+    }
+
+    await Notification.create({
+      user: appt.patient,
+      appointment: appt._id,
+      message,
+    });
+
     const populated = await Appointment.findById(appt._id)
       .populate("patient", "name email city")
       .populate("doctor", "name specialty city");
@@ -151,6 +169,13 @@ export const rescheduleAppointment = async (req: Request, res: Response) => {
     appt.cancelReason = undefined;
 
     await appt.save();
+
+    const formattedDate = newDate.toLocaleString("fr-FR");
+    await Notification.create({
+      user: appt.patient,
+      appointment: appt._id,
+      message: `Votre rendez-vous a été replanifié au ${formattedDate}.`,
+    });
 
     const populated = await Appointment.findById(appt._id)
       .populate("patient", "name email city")
