@@ -1,9 +1,17 @@
 import axios from "axios";
-import type { Notification } from "../types/notification";
 
-const API = import.meta.env.VITE_API_URL || "https://medical-1-xoci.onrender.com/api";
+const API = "http://localhost:5000/api";
 
 export const getMyNotifications = (token: string) =>
-  axios.get<Notification[]>(`${API}/notifications/me`, {
+  axios.get(`${API}/notifications/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+export const markNotificationRead = (token: string, id: string) =>
+  axios.patch(
+    `${API}/notifications/${id}/read`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );

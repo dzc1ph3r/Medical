@@ -1,9 +1,36 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { getMyNotifications, markNotificationRead } from "../api/notification.api";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
+  const [openNotifications, setOpenNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationError, setNotificationError] = useState<string | null>(null);
+
+  const unreadCount = useMemo(
+    () => notifications.filter((notification) => !notification.read).length,
+    [notifications]
+  );
+
+  useEffect(() => {
+    if (!user || !token) return;
+
+    const load = async () => {
+      try {
+        const res = await getMyNotifications(token);
+        setNotifications(res.data);
+      } catch (err: any) {
+        setNotificationError(err?.response?.data?.message || "Notifications indisponibles");
+      }
+    };
+
+    load();
+    const interval = setInterval(load, 15000);
+    return () => clearInterval(interval);
+  }, [user, token]);
 
   const onLogout = () => {
     logout();
@@ -49,6 +76,47 @@ export default function Navbar() {
       </div>
 
       <div className="navbar__actions">
+        {user && (
+          <div className="notification">
+            <button
+              className="notification-button"
+              onClick={() => setOpenNotifications((prev) => !prev)}
+              type="button"
+            >
+              <span className="notification-icon">🔔</span>
+              {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+            </button>
+            {openNotifications && (
+              <div className="notification-panel">
+                <h4>Notifications</h4>
+                {notificationError && <p className="form-error">{notificationError}</p>}
+                {!notificationError && notifications.length === 0 && (
+                  <p className="muted">Aucune notification.</p>
+                )}
+                <ul>
+                  {notifications.map((notification) => (
+                    <li key={notification._id}>
+                      <p>{notification.message}</p>
+                      {!notification.read && (
+                        <button
+                          type="button"
+                          className="button-link"
+                          onClick={async () => {
+                            await markNotificationRead(token, notification._id);
+                            const res = await getMyNotifications(token);
+                            setNotifications(res.data);
+                          }}
+                        >
+                          Marquer comme lu
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
         {!user ? (
           <>
             <Link to="/login" style={{ textDecoration: "none", color: "#334155" }}>

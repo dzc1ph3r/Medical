@@ -68,20 +68,24 @@ export default function DoctorProfile() {
               ? `${doctor.consultationFee} DA`
               : "Tarif à confirmer"}
           </span>
-          <form onSubmit={submitAppointment} className="booking-form">
-            <label>Date et heure</label>
-            <input
-              className="form-input"
-              type="datetime-local"
-              value={dateTime}
-              onChange={(event) => setDateTime(event.target.value)}
-            />
-            {bookingError && <p className="form-error">{bookingError}</p>}
-            {bookingSuccess && <p className="form-success">{bookingSuccess}</p>}
-            <button className="button-primary" type="submit" disabled={bookingLoading}>
-              {bookingLoading ? "Envoi..." : "Prendre rendez-vous"}
-            </button>
-          </form>
+          {!token ? (
+            <p className="muted">Connectez-vous pour prendre un rendez-vous.</p>
+          ) : (
+            <form onSubmit={submitAppointment} className="booking-form">
+              <label>Date et heure</label>
+              <input
+                className="form-input"
+                type="datetime-local"
+                value={dateTime}
+                onChange={(event) => setDateTime(event.target.value)}
+              />
+              {bookingError && <p className="form-error">{bookingError}</p>}
+              {bookingSuccess && <p className="form-success">{bookingSuccess}</p>}
+              <button className="button-primary" type="submit" disabled={bookingLoading}>
+                {bookingLoading ? "Envoi..." : "Prendre rendez-vous"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

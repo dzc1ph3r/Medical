@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { User } from "../context/AuthContext";
 
-const API = import.meta.env.VITE_API_URL || "https://medical-1-xoci.onrender.com/api";
+const API = "http://localhost:5000/api";
 
 export const updateMe = (token: string, payload: Partial<User>) =>
   axios.patch<User>(`${API}/users/me`, payload, {

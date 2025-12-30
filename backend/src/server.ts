@@ -10,6 +10,7 @@ import doctorRoutes from "./routes/doctor.routes";
 import userRoutes from "./routes/user.routes";
 import adminRoutes from "./routes/admin.routes";
 import medicalRecordRoutes from "./routes/medicalRecord.routes";
+import notificationRoutes from "./routes/notification.routes";
 
 dotenv.config();
 
@@ -29,12 +30,24 @@ const ensureUploadsDir = () => {
 
 ensureUploadsDir();
 
+const ensureUploadsDir = () => {
+  const dir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.chmodSync(dir, 0o700);
+  }
+  return dir;
+};
+
+ensureUploadsDir();
+
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/medical-records", medicalRecordRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI as string)

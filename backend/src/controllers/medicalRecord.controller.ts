@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import path from "path";
 import fs from "fs";
 import MedicalRecord from "../models/MedicalRecord";
+import Notification from "../models/Notification";
 
 const buildFileUrl = (id: string) => `/api/medical-records/${id}/file`;
 
@@ -30,6 +31,13 @@ export async function uploadMedicalRecord(req: Request, res: Response) {
       .populate("doctor", "name specialty city");
 
     if (!populated) return res.status(201).json(record);
+
+    const targetDoctorId = populated.doctor ? String(populated.doctor) : doctorId;
+    await Notification.create({
+      user: targetDoctorId,
+      message: "Un nouveau document médical a été partagé.",
+      type: "MEDICAL_RECORD",
+    });
 
     return res.status(201).json({
       ...populated.toObject(),
