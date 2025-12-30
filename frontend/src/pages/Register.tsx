@@ -30,7 +30,6 @@ export default function Register() {
         name,
         email,
         password,
-        role: "PATIENT",
         gender: gender || undefined,
         city: city || undefined,
       };
