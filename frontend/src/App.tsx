@@ -68,14 +68,6 @@ export default function App() {
         </ProtectedRoute>
       } />
 
-      <Route path="/notifications" element={
-  <ProtectedRoute>
-    <AppLayout>
-      <Notifications />
-    </AppLayout>
-  </ProtectedRoute>
-} />
-
       {/* Catch-all route */}
       <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
