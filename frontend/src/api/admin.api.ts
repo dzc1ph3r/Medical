@@ -1,17 +1,15 @@
-import axios from "axios";
+import { apiClient } from "./client";
 import type { User } from "../context/AuthContext";
-
-const API = "http://localhost:5000/api";
 
 export type AdminUserUpdate = Partial<User> & { role?: "PATIENT" | "DOCTOR" | "ADMIN" };
 
 export const getUsers = (token: string) =>
-  axios.get<User[]>(`${API}/admin/users`, {
+  apiClient.get<User[]>("/admin/users", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const updateUser = (token: string, id: string, payload: AdminUserUpdate) =>
-  axios.patch<User>(`${API}/admin/users/${id}`, payload, {
+  apiClient.patch<User>(`/admin/users/${id}`, payload, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -27,6 +25,6 @@ export const createDoctor = (
     gender?: "MALE" | "FEMALE";
   }
 ) =>
-  axios.post<User>(`${API}/admin/doctors`, payload, {
+  apiClient.post<User>("/admin/doctors", payload, {
     headers: { Authorization: `Bearer ${token}` },
   });

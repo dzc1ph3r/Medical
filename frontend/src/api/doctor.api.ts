@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient } from "./client";
 
 type DoctorFilters = {
   specialty?: string;
@@ -7,9 +7,9 @@ type DoctorFilters = {
 };
 
 export const getDoctors = async (filters: DoctorFilters) => {
-  return axios.get("https://medical-1-xoci.onrender.com/api/doctors", { params: filters });
+  return apiClient.get("/doctors", { params: filters });
 };
 
 export const getDoctorById = async (id: string) => {
-  return axios.get(`https://medical-1-xoci.onrender.com/api/doctors/${id}`);
+  return apiClient.get(`/doctors/${id}`);
 };

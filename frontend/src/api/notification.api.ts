@@ -1,15 +1,13 @@
-import axios from "axios";
-
-const API = "http://localhost:5000/api";
+import { apiClient } from "./client";
 
 export const getMyNotifications = (token: string) =>
-  axios.get(`${API}/notifications/me`, {
+  apiClient.get("/notifications/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const markNotificationRead = (token: string, id: string) =>
-  axios.patch(
-    `${API}/notifications/${id}/read`,
+  apiClient.patch(
+    `/notifications/${id}/read`,
     {},
     {
       headers: { Authorization: `Bearer ${token}` },

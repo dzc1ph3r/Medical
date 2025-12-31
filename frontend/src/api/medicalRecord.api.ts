@@ -1,7 +1,5 @@
-import axios from "axios";
+import { apiClient } from "./client";
 import type { MedicalRecord } from "../types/medicalRecord";
-
-const API = "http://localhost:5000/api";
 
 export const uploadMedicalRecord = (
   token: string,
@@ -12,23 +10,23 @@ export const uploadMedicalRecord = (
   if (payload.notes) formData.append("notes", payload.notes);
   formData.append("file", payload.file);
 
-  return axios.post<MedicalRecord>(`${API}/medical-records`, formData, {
+  return apiClient.post<MedicalRecord>("/medical-records", formData, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 export const getMyMedicalRecords = (token: string) =>
-  axios.get<MedicalRecord[]>(`${API}/medical-records/me`, {
+  apiClient.get<MedicalRecord[]>("/medical-records/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const getDoctorMedicalRecords = (token: string) =>
-  axios.get<MedicalRecord[]>(`${API}/medical-records/doctor/me`, {
+  apiClient.get<MedicalRecord[]>("/medical-records/doctor/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
 export const getMedicalRecordFile = async (token: string, id: string) => {
-  const res = await axios.get(`${API}/medical-records/${id}/file`, {
+  const res = await apiClient.get(`/medical-records/${id}/file`, {
     headers: { Authorization: `Bearer ${token}` },
     responseType: "blob",
   });
@@ -36,6 +34,6 @@ export const getMedicalRecordFile = async (token: string, id: string) => {
 };
 
 export const deleteMedicalRecord = (token: string, id: string) =>
-  axios.delete(`${API}/medical-records/${id}`, {
+  apiClient.delete(`/medical-records/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });

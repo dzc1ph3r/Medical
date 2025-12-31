@@ -1,14 +1,6 @@
 // frontend/src/layouts/PublicLayout.tsx
-import { ReactNode } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import {
-  Heart,
-  Shield,
-  Clock,
-  Users,
-  Award,
-  ChevronRight
-} from 'lucide-react';
+import { Heart, Shield, Clock, Users, Award, ChevronRight } from '../components/icons';
 
 export default function PublicLayout() {
   const location = useLocation();
