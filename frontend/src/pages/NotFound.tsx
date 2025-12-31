@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, Search, Frown, ArrowLeft, AlertTriangle, Shield } from "lucide-react";
+import { Home, Search, Frown, ArrowLeft, AlertTriangle, Shield } from "../components/icons";
 
 export default function NotFound() {
   return (

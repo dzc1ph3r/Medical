@@ -1,19 +1,19 @@
 import { Link } from "react-router-dom";
-import { 
-  Search, 
-  Calendar, 
-  Shield, 
-  Upload, 
-  Bell, 
-  MapPin, 
-  Clock, 
+import {
+  Search,
+  Calendar,
+  Shield,
+  Upload,
+  Bell,
+  MapPin,
+  Clock,
   Stethoscope,
   Users,
   FileText,
   ArrowRight,
   Star,
   CheckCircle
-} from "lucide-react";
+} from "../components/icons";
 
 export default function Home() {
   const features = [
