@@ -13,7 +13,7 @@ import {
   Menu,
   X,
   ChevronDown
-} from "lucide-react";
+} from "./icons";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
