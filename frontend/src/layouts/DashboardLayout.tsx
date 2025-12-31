@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import useAuth from '../hooks/useAuth';
-import { Calendar, User, FileText, Settings, Bell, Home } from 'lucide-react';
+import { Calendar, User, FileText, Settings, Bell, Home } from '../components/icons';
 import { Link, useLocation } from 'react-router-dom';
 
 interface DashboardLayoutProps {

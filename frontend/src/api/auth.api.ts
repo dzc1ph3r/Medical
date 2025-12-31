@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API = import.meta.env.VITE_API_URL || "https://medical-1-xoci.onrender.com/api";
+import { apiClient } from "./client";
 
 export type LoginPayload = {
   email: string;
@@ -16,12 +14,12 @@ export type RegisterPayload = {
 };
 
 export const login = (payload: LoginPayload) =>
-  axios.post(`${API}/auth/login`, payload);
+  apiClient.post("/auth/login", payload);
 
 export const register = (payload: RegisterPayload) =>
-  axios.post(`${API}/auth/register`, payload);
+  apiClient.post("/auth/register", payload);
 
 export const me = (token: string) =>
-  axios.get(`${API}/auth/me`, {
+  apiClient.get("/auth/me", {
     headers: { Authorization: `Bearer ${token}` },
   });

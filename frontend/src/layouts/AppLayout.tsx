@@ -1,8 +1,9 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useLocation, Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import NotificationBell from "../components/NotificationBell";
-import { Home, Calendar, User, Settings, LogOut, Bell, Menu, X } from "lucide-react";
+import { Home, Calendar, User, Settings, LogOut, Bell, Menu, X } from "../components/icons";
 
 interface AppLayoutProps {
   children?: ReactNode;

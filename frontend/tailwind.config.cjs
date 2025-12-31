@@ -344,9 +344,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // Better form styling
-    require('@tailwindcss/typography'), // Rich text styling
-    require('@tailwindcss/aspect-ratio'), // Aspect ratio utilities
     function({ addUtilities }) {
       const newUtilities = {
         // Glass morphism utilities
