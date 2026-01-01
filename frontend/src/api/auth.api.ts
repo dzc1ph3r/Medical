@@ -23,3 +23,9 @@ export const me = (token: string) =>
   apiClient.get("/auth/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+export const forgotPassword = (email: string) =>
+  apiClient.post("/auth/forgot-password", { email });
+
+export const resetPassword = (token: string, newPassword: string) =>
+  apiClient.post("/auth/reset-password", { token, newPassword });

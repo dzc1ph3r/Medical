@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import User from "../models/User";
 import { signToken } from "../utils/jwt";
 
@@ -98,6 +99,51 @@ export async function me(req: Request, res: Response) {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     return res.json(user);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
+  }
+}
+
+export async function forgotPassword(req: Request, res: Response) {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email required" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+    await user.save();
+
+    console.log(`[DEV] Reset Token for ${email}: ${resetToken}`);
+
+    return res.json({ message: "Reset link sent", devToken: resetToken });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: String(err) });
+  }
+}
+
+export async function resetPassword(req: Request, res: Response) {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ message: "Token and password required" });
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return res.json({ message: "Password updated successfully" });
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err) });
   }

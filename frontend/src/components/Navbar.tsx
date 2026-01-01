@@ -27,9 +27,9 @@ export default function Navbar() {
   };
 
   const dashboardPath =
-    user?.role === "DOCTOR" ? "/doctor/dashboard" : 
-    user?.role === "ADMIN" ? "/admin" : 
-    "/patient/dashboard";
+    user?.role === "DOCTOR" ? "/doctor/dashboard" :
+      user?.role === "ADMIN" ? "/admin" :
+        "/patient/dashboard";
 
   const getRoleLabel = (role: string) => {
     switch (role) {
@@ -69,17 +69,17 @@ export default function Navbar() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex ml-10 space-x-8">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
               >
                 <Home className="w-4 h-4 mr-2" />
                 Accueil
               </Link>
-              
+
               {user?.role !== "DOCTOR" && user?.role !== "ADMIN" && (
-                <Link 
-                  to="/doctors" 
+                <Link
+                  to="/doctors"
                   className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Users className="w-4 h-4 mr-2" />
@@ -88,28 +88,28 @@ export default function Navbar() {
               )}
 
               {user?.role === "PATIENT" && (
-                <Link 
-                  to="/patient/dashboard" 
+                <Link
+                  to="/patient/dashboard"
                   className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   Mes RDV
                 </Link>
               )}
-              
+
               {user?.role === "DOCTOR" && (
-                <Link 
-                  to="/doctor/dashboard" 
+                <Link
+                  to="/doctor/dashboard"
                   className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   Calendrier
                 </Link>
               )}
-              
+
               {user?.role === "ADMIN" && (
-                <Link 
-                  to="/admin" 
+                <Link
+                  to="/admin"
                   className="flex items-center text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Shield className="w-4 h-4 mr-2" />
@@ -124,7 +124,7 @@ export default function Navbar() {
             {user ? (
               <>
                 {/* Notification Bell Component */}
-                <NotificationBell 
+                <NotificationBell
                   showForRoles={['PATIENT', 'DOCTOR', 'ADMIN']}
                   className="mr-2"
                 />
@@ -149,8 +149,8 @@ export default function Navbar() {
 
                   {openProfileMenu && (
                     <>
-                      <div 
-                        className="fixed inset-0 z-40" 
+                      <div
+                        className="fixed inset-0 z-40"
                         onClick={() => setOpenProfileMenu(false)}
                       />
                       <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 animate-slide-in-down">
@@ -165,7 +165,7 @@ export default function Navbar() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="p-2">
                           <Link
                             to={dashboardPath}
@@ -175,24 +175,8 @@ export default function Navbar() {
                             <User className="w-4 h-4 mr-3 text-slate-500" />
                             Mon tableau de bord
                           </Link>
-                          
-                          <Link
-                            to="/profile"
-                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
-                            onClick={() => setOpenProfileMenu(false)}
-                          >
-                            <User className="w-4 h-4 mr-3 text-slate-500" />
-                            Mon profil
-                          </Link>
-                          
-                          <Link
-                            to="/settings"
-                            className="flex items-center w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
-                            onClick={() => setOpenProfileMenu(false)}
-                          >
-                            <User className="w-4 h-4 mr-3 text-slate-500" />
-                            Paramètres
-                          </Link>
+
+
 
                           <Link
                             to="/notifications"
@@ -203,7 +187,7 @@ export default function Navbar() {
                             Toutes les notifications
                           </Link>
                         </div>
-                        
+
                         <div className="p-4 border-t border-slate-200">
                           <button
                             onClick={onLogout}
@@ -275,7 +259,7 @@ export default function Navbar() {
                     <User className="w-4 h-4 mr-3 text-slate-500" />
                     Mon tableau de bord
                   </Link>
-                  
+
                   <Link
                     to="/"
                     className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
@@ -284,7 +268,7 @@ export default function Navbar() {
                     <Home className="w-4 h-4 mr-3 text-slate-500" />
                     Accueil
                   </Link>
-                  
+
                   {user?.role !== "DOCTOR" && user?.role !== "ADMIN" && (
                     <Link
                       to="/doctors"
@@ -295,7 +279,7 @@ export default function Navbar() {
                       Médecins
                     </Link>
                   )}
-                  
+
                   <Link
                     to="/notifications"
                     className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors duration-200"
@@ -304,7 +288,7 @@ export default function Navbar() {
                     <User className="w-4 h-4 mr-3 text-slate-500" />
                     Mes notifications
                   </Link>
-                  
+
                   <button
                     onClick={onLogout}
                     className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
