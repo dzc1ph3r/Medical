@@ -134,10 +134,11 @@ export async function forgotPassword(req: Request, res: Response) {
       await sendEmail(user.email, "Réinitialisation de mot de passe - MediConnect", message);
       return res.json({ message: "Un email de réinitialisation a été envoyé." });
     } catch (emailError) {
+      console.error("Error sending email:", emailError);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save();
-      return res.status(500).json({ message: "Erreur lors de l'envoi de l'email" });
+      return res.status(500).json({ message: "Erreur lors de l'envoi de l'email", error: String(emailError) });
     }
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err) });
