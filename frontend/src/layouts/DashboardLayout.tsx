@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import useAuth from '../hooks/useAuth';
-import { Calendar, User, FileText, Settings, Bell, Home } from '../components/icons';
+import { User, Bell, Home } from '../components/icons';
 import { Link, useLocation } from 'react-router-dom';
 
 interface DashboardLayoutProps {
@@ -10,14 +10,51 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user } = useAuth() || {};
   const location = useLocation();
-  
-  const navItems = [
-    { icon: Home, label: 'Dashboard', path: '/dashboard' },
-    { icon: Calendar, label: 'Appointments', path: '/appointments' },
-    { icon: User, label: 'Patients', path: '/patients' },
-    { icon: FileText, label: 'Medical Records', path: '/records' },
+
+  /* 
+    FIX: Using dynamic navigation based on user role would be better here.
+    However, the current architecture seems to wrap specific dashboard pages (PatientDashboard, DoctorDashboard)
+    inside this layout, but those pages implemented their OWN tabs/Sidebar?
+    
+    Actually, looking at App.tsx:
+    <RoleRoute>
+      <DashboardLayout>
+        <PatientDashboard /> 
+      </DashboardLayout>
+    </RoleRoute>
+
+    And PatientDashboard.tsx has its own tabs: "Rendez-vous", "Documents", "Profil".
+    
+    The DashboardLayout sidebar seems redundant or conflicting with the internal page tabs if it links to separate pages like '/appointments' which don't exist as separate routes in App.tsx. 
+    
+    The user asked to "reparer les redirections des bouttons". The buttons in this Sidebar point to /dashboard, /appointments, etc., which are NOT defined in App.tsx.
+    
+    I should hide this sidebar or make it compatible with the single-page dashboard structure. 
+    Or better, since the Dashboards (Patient/Doctor) handle their own navigation via internal state (Tabs), 
+    this Layout should probably NOT have a conflicting Sidebar navigation that points to non-existent routes.
+    
+    I will remove the specific navigation items that don't exist and instead rely on the main dashboard page.
+    Or, I can make the links scroll to sections or just remove the sidebar navigation items that are broken.
+    
+    Given the structure, it seems DashboardLayout is just a wrapper for style. 
+    The "Sidebar" here has hardcoded links to /appointments, /patients etc that don't exist.
+    
+    I will remove the sidebar navigation items or disable them.
+  */
+
+  // Let's keep it simple: The DashboardLayout sidebar should probably just link to the main Dashboard
+  // or be removed if the inner pages handle navigation.
+  // But since the user complained about broken "buttons redirections", this is likely the culprit.
+
+  const dashboardPath = user?.role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard";
+
+
+
+  // Actually, let's just show the Dashboard link and Notifications which exists.
+  const refinedNavItems = [
+    { icon: Home, label: 'Accueil', path: '/' },
+    { icon: User, label: 'Mon Tableau de bord', path: dashboardPath },
     { icon: Bell, label: 'Notifications', path: '/notifications' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   return (
@@ -61,21 +98,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Navigation */}
             <nav className="space-y-1">
-              {navItems.map((item) => {
+              {refinedNavItems.map((item) => {
                 const isActive = location.pathname.startsWith(item.path);
                 return (
                   <Link
                     key={item.label}
                     to={item.path}
-                    className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
-                      isActive
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 border border-blue-100'
-                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
+                    className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${isActive
+                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 border border-blue-100'
+                      : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                      }`}
                   >
-                    <item.icon className={`w-4 h-4 mr-3 transition-transform duration-200 group-hover:scale-110 ${
-                      isActive ? 'text-blue-500' : 'text-slate-400 group-hover:text-slate-600'
-                    }`} />
+                    <item.icon className={`w-4 h-4 mr-3 transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-blue-500' : 'text-slate-400 group-hover:text-slate-600'
+                      }`} />
                     {item.label}
                     {isActive && (
                       <span className="ml-auto w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>

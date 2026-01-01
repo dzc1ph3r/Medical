@@ -13,6 +13,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Forbidden from "./pages/Forbidden";
 import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
+import About from "./pages/About";
+import Services from "./pages/Services";
 import PublicLayout from "./layouts/PublicLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 import RoleRoute from "./components/RoleRoute";
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
         <Route path="/doctors/:id" element={<DoctorProfile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/403" element={<Forbidden />} />
         <Route path="/404" element={<NotFound />} />
       </Route>
