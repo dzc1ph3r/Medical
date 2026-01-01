@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/email";
 import User from "../models/User";
 import { signToken } from "../utils/jwt";
+import crypto from "crypto";
 
 type Role = "DOCTOR" | "PATIENT" | "ADMIN";
 
@@ -117,9 +119,25 @@ export async function forgotPassword(req: Request, res: Response) {
     user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
     await user.save();
 
-    console.log(`[DEV] Reset Token for ${email}: ${resetToken}`);
+    // Send email
+    const resetUrl = `https://medcare-silk.vercel.app/reset-password?token=${resetToken}`;
+    const message = `
+      <h1>Réinitialisation de mot de passe</h1>
+      <p>Vous avez demandé une réinitialisation de mot de passe.</p>
+      <p>Veuillez cliquer sur le lien suivant pour définir un nouveau mot de passe :</p>
+      <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
+      <p>Ce lien expirera dans 1 heure.</p>
+    `;
 
-    return res.json({ message: "Reset link sent", devToken: resetToken });
+    try {
+      await sendEmail(user.email, "Réinitialisation de mot de passe - MediConnect", message);
+      return res.json({ message: "Un email de réinitialisation a été envoyé." });
+    } catch (emailError) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      return res.status(500).json({ message: "Erreur lors de l'envoi de l'email" });
+    }
   } catch (err) {
     return res.status(500).json({ message: "Server error", error: String(err) });
   }

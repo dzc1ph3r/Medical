@@ -8,7 +8,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user } = useAuth() || {};
+  const { user, logout } = useAuth() || {};
   const location = useLocation();
 
   /* 
@@ -118,6 +118,29 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Link>
                 );
               })}
+
+              <button
+                onClick={logout}
+                className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group mt-4"
+              >
+                <div className="w-4 h-4 mr-3 flex items-center justify-center">
+                  <svg
+                    className="w-4 h-4 text-red-500 group-hover:text-red-700 transition-transform duration-200 group-hover:scale-110"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                </div>
+                Se déconnecter
+              </button>
             </nav>
 
             {/* Quick Stats */}
