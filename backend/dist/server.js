@@ -15,6 +15,7 @@ const doctor_routes_1 = __importDefault(require("./routes/doctor.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const medicalRecord_routes_1 = __importDefault(require("./routes/medicalRecord.routes"));
+const notification_routes_1 = __importDefault(require("./routes/notification.routes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -35,6 +36,7 @@ app.use("/api/doctors", doctor_routes_1.default);
 app.use("/api/users", user_routes_1.default);
 app.use("/api/admin", admin_routes_1.default);
 app.use("/api/medical-records", medicalRecord_routes_1.default);
+app.use("/api/notifications", notification_routes_1.default);
 mongoose_1.default
     .connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))

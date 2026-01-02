@@ -26,5 +26,7 @@ const userSchema = new mongoose_1.default.Schema({
     address: { type: String, trim: true },
     lat: { type: Number },
     lng: { type: Number },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("User", userSchema);

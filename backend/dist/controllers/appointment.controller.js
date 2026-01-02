@@ -27,6 +27,11 @@ const createAppointment = async (req, res) => {
             date: when,
             status: "PENDING",
         });
+        await Notification_1.default.create({
+            user: doctorId,
+            message: "Nouveau rendez-vous en attente.",
+            type: "APPOINTMENT_REQUEST",
+        });
         const populated = await Appointment_1.default.findById(appt._id)
             .populate("patient", "name email city")
             .populate("doctor", "name specialty city");
@@ -104,19 +109,14 @@ const updateAppointmentStatus = async (req, res) => {
         appt.status = status;
         appt.cancelReason = status === "CANCELLED" ? (cancelReason || "") : undefined;
         await appt.save();
-        const statusLabel = status === "ACCEPTED"
-            ? "accepté"
-            : status === "CANCELLED"
-                ? "annulé"
-                : "mis à jour";
-        let message = `Votre rendez-vous a été ${statusLabel}.`;
-        if (status === "CANCELLED" && cancelReason) {
-            message = `${message} Motif : ${cancelReason}.`;
-        }
         await Notification_1.default.create({
             user: appt.patient,
-            appointment: appt._id,
-            message,
+            message: status === "ACCEPTED"
+                ? "Votre rendez-vous a été accepté."
+                : status === "CANCELLED"
+                    ? "Votre rendez-vous a été annulé."
+                    : "Votre rendez-vous a été mis à jour.",
+            type: "APPOINTMENT_STATUS",
         });
         const populated = await Appointment_1.default.findById(appt._id)
             .populate("patient", "name email city")
@@ -152,11 +152,10 @@ const rescheduleAppointment = async (req, res) => {
         appt.status = "PENDING";
         appt.cancelReason = undefined;
         await appt.save();
-        const formattedDate = newDate.toLocaleString("fr-FR");
         await Notification_1.default.create({
             user: appt.patient,
-            appointment: appt._id,
-            message: `Votre rendez-vous a été replanifié au ${formattedDate}.`,
+            message: "Votre rendez-vous a été reporté. Merci de confirmer la nouvelle date.",
+            type: "APPOINTMENT_RESCHEDULED",
         });
         const populated = await Appointment_1.default.findById(appt._id)
             .populate("patient", "name email city")

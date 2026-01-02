@@ -11,6 +11,7 @@ exports.deleteMedicalRecord = deleteMedicalRecord;
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const MedicalRecord_1 = __importDefault(require("../models/MedicalRecord"));
+const Notification_1 = __importDefault(require("../models/Notification"));
 const buildFileUrl = (id) => `/api/medical-records/${id}/file`;
 async function uploadMedicalRecord(req, res) {
     try {
@@ -34,6 +35,12 @@ async function uploadMedicalRecord(req, res) {
             .populate("doctor", "name specialty city");
         if (!populated)
             return res.status(201).json(record);
+        const targetDoctorId = populated.doctor ? String(populated.doctor) : doctorId;
+        await Notification_1.default.create({
+            user: targetDoctorId,
+            message: "Un nouveau document médical a été partagé.",
+            type: "MEDICAL_RECORD",
+        });
         return res.status(201).json({
             ...populated.toObject(),
             fileUrl: buildFileUrl(String(populated._id)),

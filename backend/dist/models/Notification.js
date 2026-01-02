@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const notificationSchema = new mongoose_1.default.Schema({
     user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User", required: true },
-    appointment: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Appointment" },
-    message: { type: String, required: true, trim: true },
+    message: { type: String, required: true },
+    type: { type: String, required: true },
     read: { type: Boolean, default: false },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("Notification", notificationSchema);
