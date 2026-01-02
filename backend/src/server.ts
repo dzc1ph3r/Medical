@@ -21,10 +21,12 @@ app.use("/uploads", express.static("uploads"));
 
 
 const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), "uploads");
+  const isVercel = process.env.VERCEL === "1";
+  const dir = isVercel ? "/tmp/uploads" : path.join(process.cwd(), "uploads");
+
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
-    fs.chmodSync(dir, 0o700);
+    // fs.chmodSync(dir, 0o700); // chmod might fail on some lambda environments
   }
   return dir;
 };

@@ -15,7 +15,16 @@ const router = Router();
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
-    cb(null, path.join(process.cwd(), "uploads"));
+    const isVercel = process.env.VERCEL === "1";
+    const uploadDir = isVercel ? "/tmp/uploads" : path.join(process.cwd(), "uploads");
+
+    // Ensure dir exists before upload (multer might not create it automatically)
+    const fs = require('fs'); // Dynamic require if needed, but imported above usually
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    cb(null, uploadDir);
   },
   filename: (_req, file, cb) => {
     const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
