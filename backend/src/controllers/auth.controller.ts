@@ -120,7 +120,7 @@ export async function forgotPassword(req: Request, res: Response) {
     await user.save();
 
     // Send email
-    const frontendUrl = process.env.FRONTEND_URL || "https://medcare-silk.vercel.app";
+    const frontendUrl = process.env.FRONTEND_URL || "https://medcare-silk.vercel.app/api";
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
     const message = `
       <h1>Réinitialisation de mot de passe</h1>
