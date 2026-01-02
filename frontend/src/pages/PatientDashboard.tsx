@@ -12,6 +12,7 @@ import {
 import { wilayas } from "../utils/wilayas";
 import type { Appointment, PersonRef } from "../types/appointment";
 import type { MedicalRecord } from "../types/medicalRecord";
+import DoctorSearchTab from "../components/DoctorSearchTab";
 
 const getDoctorLabel = (doctor: Appointment["doctor"]) => {
   if (typeof doctor === "string") return doctor;
@@ -23,7 +24,7 @@ export default function PatientDashboard() {
   const { token, user, refreshMe } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"appointments" | "documents" | "profile">(
+  const [activeTab, setActiveTab] = useState<"appointments" | "documents" | "profile" | "search">(
     "appointments"
   );
   const [savingProfile, setSavingProfile] = useState(false);
@@ -220,8 +221,20 @@ export default function PatientDashboard() {
           >
             Profil
           </button>
+          <button
+            className={`tab-button ${activeTab === "search" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("search")}
+          >
+            Trouver un médecin
+          </button>
         </div>
       </div>
+
+      {activeTab === "search" && (
+        <div className="tab-panel">
+          <DoctorSearchTab />
+        </div>
+      )}
 
       {activeTab === "appointments" && (
         <div className="tab-panel">
