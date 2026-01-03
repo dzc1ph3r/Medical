@@ -7,7 +7,7 @@ import { wilayas } from "../utils/wilayas";
 type TabKey = "doctors" | "users";
 
 export default function AdminDashboard() {
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
   const [activeTab, setActiveTab] = useState<TabKey>("doctors");
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -95,14 +95,9 @@ export default function AdminDashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard__header">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <h2>Administration</h2>
-            <p>Gérez les comptes médecins, patients et administrateurs.</p>
-          </div>
-          <button onClick={() => logout?.()} className="button-link" style={{ color: "var(--danger-color, #ef4444)" }}>
-            Se déconnecter
-          </button>
+        <div>
+          <h2>Administration</h2>
+          <p>Gérez les comptes médecins, patients et administrateurs.</p>
         </div>
         <div className="tabs">
           <button

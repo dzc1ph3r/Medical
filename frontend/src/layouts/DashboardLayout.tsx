@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import useAuth from '../hooks/useAuth';
-import { User, Bell, Home } from '../components/icons';
+import { User, Bell, Home, LogOut, Menu, X } from '../components/icons';
 import { Link, useLocation } from 'react-router-dom';
 
 interface DashboardLayoutProps {
@@ -10,6 +11,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth() || {};
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   /* 
     FIX: Using dynamic navigation based on user role would be better here.
@@ -68,12 +70,85 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <div>
               <h1 className="text-sm font-semibold text-slate-900">
-                {user?.name || 'User'}'s Dashboard
+                Dashboard
               </h1>
             </div>
           </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm animate-fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Drawer Panel */}
+          <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-2xl animate-slide-in-right">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                    {user?.name?.[0] || 'U'}
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-slate-900">{user?.name}</h2>
+                    <p className="text-xs text-slate-500">{user?.role}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <nav className="space-y-1">
+                {refinedNavItems.map((item) => {
+                  const isActive = location.pathname.startsWith(item.path);
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+                        ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                        : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                      <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-500' : 'text-slate-400'}`} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+
+                <div className="my-6 border-t border-slate-100 pt-6">
+                  <button
+                    onClick={() => {
+                      logout?.();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
+                  >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    Se déconnecter
+                  </button>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex">
         {/* Desktop Sidebar */}

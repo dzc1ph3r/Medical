@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useLocation, Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import NotificationBell from "../components/NotificationBell";
+import useAuth from "../hooks/useAuth";
 import { Home, Calendar, User, Settings, LogOut, Bell, Menu, X } from "../components/icons";
 
 interface AppLayoutProps {
@@ -10,23 +11,24 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
+  const { logout } = useAuth() || {};
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const location = useLocation();
-  
+
   // Determine if we're on a dashboard page
   const isDashboard = location.pathname.includes('/dashboard');
-  
+
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrollPosition(window.scrollY);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   // Navigation items for sidebar
   const navItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard", active: isDashboard },
@@ -44,20 +46,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-soft delay-1000"></div>
         <div className="absolute top-1/2 left-1/4 w-60 h-60 bg-sky-100 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float"></div>
       </div>
-      
+
       {/* Main Layout */}
       <div className="relative z-10">
         {/* Header with enhanced Navbar */}
-        <header className={`sticky top-0 z-50 transition-all duration-300 ${
-          scrollPosition > 20 
-            ? 'bg-white/90 backdrop-blur-lg shadow-soft-lg border-b border-slate-200/50' 
+        <header className={`sticky top-0 z-50 transition-all duration-300 ${scrollPosition > 20
+            ? 'bg-white/90 backdrop-blur-lg shadow-soft-lg border-b border-slate-200/50'
             : 'bg-transparent'
-        }`}>
+          }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Navbar />
           </div>
         </header>
-        
+
         <div className="flex">
           {/* Sidebar - Desktop */}
           {isDashboard && (
@@ -72,15 +73,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
                       <a
                         key={item.label}
                         href={item.path}
-                        className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
-                          item.active
+                        className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${item.active
                             ? 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 border border-blue-100'
                             : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                        }`}
+                          }`}
                       >
-                        <item.icon className={`w-4 h-4 mr-3 transition-transform duration-200 group-hover:scale-110 ${
-                          item.active ? 'text-blue-500' : 'text-slate-400 group-hover:text-slate-600'
-                        }`} />
+                        <item.icon className={`w-4 h-4 mr-3 transition-transform duration-200 group-hover:scale-110 ${item.active ? 'text-blue-500' : 'text-slate-400 group-hover:text-slate-600'
+                          }`} />
                         {item.label}
                         {item.active && (
                           <span className="ml-auto w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
@@ -89,7 +88,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     ))}
                   </nav>
                 </div>
-                
+
                 {/* User Profile Summary */}
                 <div className="mt-12 pt-6 border-t border-slate-200">
                   <div className="flex items-center space-x-3">
@@ -101,7 +100,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                       <p className="text-xs text-slate-500">Cardiologist</p>
                     </div>
                   </div>
-                  <button className="mt-4 w-full flex items-center justify-center px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors duration-200">
+                  <button
+                    onClick={logout}
+                    className="mt-4 w-full flex items-center justify-center px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors duration-200"
+                  >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </button>
@@ -109,7 +111,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
               </div>
             </aside>
           )}
-          
+
           {/* Main Content Area */}
           <main className="flex-1">
             {/* Mobile Menu Button */}
@@ -121,16 +123,16 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             )}
-            
+
             {/* Mobile Sidebar */}
             {isDashboard && isMobileMenuOpen && (
               <div className="lg:hidden fixed inset-0 z-30">
                 {/* Backdrop */}
-                <div 
+                <div
                   className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                   onClick={() => setIsMobileMenuOpen(false)}
                 />
-                
+
                 {/* Sidebar Panel */}
                 <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl animate-slide-in-right">
                   <div className="p-6 h-full overflow-y-auto">
@@ -143,7 +145,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         <X size={20} />
                       </button>
                     </div>
-                    
+
                     <nav className="space-y-2 mb-8">
                       {navItems.map((item) => (
                         <a
@@ -161,7 +163,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 </div>
               </div>
             )}
-            
+
             {/* Content Container */}
             <div className={`${isDashboard ? 'max-w-6xl' : 'max-w-7xl'} mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8`}>
               {/* Page Header */}
@@ -176,7 +178,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         Here's what's happening with your medical practice today.
                       </p>
                     </div>
-                    
+
                     {/* Quick Actions */}
                     <div className="flex items-center space-x-3">
                       <NotificationBell />
@@ -185,7 +187,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Stats Summary */}
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-soft">
@@ -199,7 +201,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-soft">
                       <div className="flex items-center justify-between">
                         <div>
@@ -211,7 +213,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-soft">
                       <div className="flex items-center justify-between">
                         <div>
@@ -226,12 +228,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </div>
                 </div>
               )}
-              
+
               {/* Main Content */}
               <div className={isDashboard ? '' : 'animate-fade-in'}>
                 {children || <Outlet />}
               </div>
-              
+
               {/* Floating Help Button */}
               <button className="fixed bottom-6 left-6 z-40 w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 hover:scale-110 group">
                 <span className="text-lg font-bold">?</span>
@@ -243,7 +245,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </main>
         </div>
       </div>
-      
+
       {/* Global Toast Container */}
       <div className="fixed bottom-24 right-6 z-50 space-y-3">
         {/* Example Toast - You can make this dynamic */}
